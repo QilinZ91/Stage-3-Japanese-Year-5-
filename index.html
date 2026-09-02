@@ -1,0 +1,837 @@
+<title>Meishi Master</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&family=Noto+Sans+JP:wght@500;700&display=swap">
+<style>
+  :root{
+    --ink:#1c2a52; --blue:#2242b8; --green:#2f9e44; --orange:#e8681a;
+    --red:#e0405a; --purple:#7c4dbc; --gold:#f5c542;
+    --ground:#f3f6fd; --card:#ffffff; --line:#d7e0f5; --muted:#66708a;
+    --blueT:#eef3fd; --greenT:#f0faf1; --orangeT:#fdf4ec; --redT:#fdf0f3; --purpleT:#f6f1fc; --goldT:#fffbe9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font-family:'Nunito','DejaVu Sans',sans-serif;font-size:17px;line-height:1.5}
+  .jp{font-family:'Noto Sans JP','Nunito',sans-serif}
+  .wrap{max-width:780px;margin:0 auto;padding:0 16px 60px}
+  header{position:sticky;top:0;z-index:10;background:var(--blue);color:#fff;box-shadow:0 2px 10px rgba(28,42,82,.25)}
+  .hbar{max-width:780px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+  .hbar h1{font-family:'Baloo 2',sans-serif;font-size:26px;margin:0;letter-spacing:.5px}
+  .hbar .sub{font-size:12px;opacity:.85;margin-top:-4px}
+  .stars{margin-left:auto;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);
+    border-radius:999px;padding:4px 14px;font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+  .banner{background:var(--goldT);border:2px solid var(--gold);border-radius:12px;padding:10px 14px;margin:14px 0;font-size:15px}
+  .banner.hide{display:none}
+
+  .setup{background:var(--card);border:2.5px solid var(--blue);border-radius:16px;padding:14px 16px;margin:16px 0;
+    display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .setup label{font-weight:800;font-size:15px}
+  .setup input{font:inherit;font-weight:700;color:var(--ink);border:2px solid var(--line);border-radius:10px;
+    padding:8px 12px;width:150px;background:#fff}
+  .setup input:focus{outline:3px solid var(--gold)}
+  .agechips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{border:2px solid var(--blue);background:#fff;color:var(--blue);font:inherit;font-weight:800;
+    border-radius:999px;padding:7px 15px;cursor:pointer;font-size:16px}
+  .chip.on{background:var(--blue);color:#fff}
+  .chip:focus-visible{outline:3px solid var(--gold)}
+
+  nav.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+  .tab{border:0;border-radius:14px;padding:12px 6px 10px;cursor:pointer;font-family:'Baloo 2',sans-serif;
+    font-size:16px;color:#fff;opacity:.55;transform:translateY(0);transition:.15s}
+  .tab .big{font-size:24px;display:block}
+  .tab.on{opacity:1;box-shadow:0 4px 0 rgba(28,42,82,.25);transform:translateY(-2px)}
+  .tab:focus-visible{outline:3px solid var(--ink)}
+  .t1{background:var(--blue)} .t2{background:var(--purple)} .t3{background:var(--orange)} .t4{background:var(--red)}
+
+  section.station{margin-top:6px}
+  .stationhead{font-family:'Baloo 2',sans-serif;font-size:22px;margin:10px 0 4px}
+  .hint{color:var(--muted);font-size:15px;margin:0 0 14px}
+
+  .group{font-family:'Baloo 2',sans-serif;font-size:17px;color:var(--muted);margin:18px 0 8px;letter-spacing:.3px}
+  .pcard{background:var(--card);border:2.5px solid var(--line);border-left-width:8px;border-radius:14px;
+    padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .pcard .txt{flex:1;min-width:230px}
+  .ro{font-size:20px;font-weight:800}
+  .ro .sai{color:var(--red)}
+  .kana{font-size:15px;color:var(--blue);font-weight:700;margin-top:2px}
+  .en{font-size:14px;color:var(--muted)}
+  .abtns{display:flex;gap:8px}
+  .play,.mic,.bigbtn{border:0;border-radius:12px;font:inherit;font-weight:800;cursor:pointer;color:#fff;
+    padding:10px 16px;font-size:16px;box-shadow:0 3px 0 rgba(28,42,82,.28)}
+  .play{background:var(--green)} .play.slow{background:var(--purple)}
+  .play:active,.mic:active,.bigbtn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(28,42,82,.28)}
+  .play:focus-visible,.mic:focus-visible,.bigbtn:focus-visible,.opt:focus-visible{outline:3px solid var(--ink)}
+  .mic{background:var(--orange)} .mic.rec{background:var(--red);animation:pulse 1s infinite}
+  @keyframes pulse{50%{box-shadow:0 0 0 8px rgba(224,64,90,.25)}}
+  @media (prefers-reduced-motion: reduce){ .mic.rec{animation:none} .tab{transition:none} }
+
+  .quizbox,.speakbox,.dojo{background:var(--card);border:2.5px solid var(--line);border-radius:16px;padding:18px;margin-top:10px}
+  .qq{font-family:'Baloo 2',sans-serif;font-size:20px;margin:0 0 12px}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opt{border:2.5px solid var(--line);background:var(--blueT);border-radius:12px;padding:14px;font:inherit;
+    font-weight:700;font-size:17px;cursor:pointer;text-align:left;color:var(--ink)}
+  .opt.good{background:var(--greenT);border-color:var(--green);color:var(--green)}
+  .opt.bad{background:var(--redT);border-color:var(--red);color:var(--red)}
+  .opt:disabled{cursor:default}
+  .feedback{min-height:28px;font-weight:800;margin-top:10px;font-size:17px}
+  .progress{display:flex;gap:5px;margin-bottom:12px}
+  .dot{width:14px;height:14px;border-radius:50%;background:var(--line)}
+  .dot.hit{background:var(--green)} .dot.miss{background:var(--red)} .dot.now{background:var(--gold)}
+  .bigbtn{background:var(--blue);font-size:18px;padding:13px 26px}
+  .bigbtn.orange{background:var(--orange)} .bigbtn.green{background:var(--green)}
+  .center{text-align:center}
+  .heard{background:var(--blueT);border-radius:10px;padding:9px 12px;margin-top:10px;font-size:15px}
+  .starrow{font-size:30px;letter-spacing:4px;min-height:40px}
+  .selfrow{margin-top:8px;font-size:14px;color:var(--muted)}
+  .selfrow button{border:2px solid var(--gold);background:var(--goldT);border-radius:999px;font:inherit;
+    font-weight:800;padding:5px 13px;cursor:pointer;color:var(--ink)}
+
+  .bubble{display:flex;gap:10px;align-items:flex-start;margin:12px 0}
+  .bubble .face{font-size:34px;line-height:1}
+  .bubble .say{background:var(--purpleT);border:2px solid var(--purple);border-radius:4px 16px 16px 16px;padding:10px 14px}
+  .bubble .say .who{font-size:12px;font-weight:800;color:var(--purple);letter-spacing:.5px}
+  .bubble.you{flex-direction:row-reverse}
+  .bubble.you .say{background:var(--greenT);border-color:var(--green);border-radius:16px 4px 16px 16px}
+  .bubble.you .say .who{color:var(--green)}
+  .cue{display:inline-block;background:var(--goldT);border:2px solid var(--gold);border-radius:999px;
+    padding:3px 12px;font-size:14px;font-weight:800;margin:4px 4px 0 0}
+  .timer{font-variant-numeric:tabular-nums;font-family:'Baloo 2',sans-serif;font-size:22px;color:var(--blue)}
+  .check{display:flex;align-items:center;gap:10px;background:var(--blueT);border-radius:10px;padding:9px 12px;margin:6px 0;font-weight:700;font-size:15px}
+  .check input{width:22px;height:22px;accent-color:var(--green)}
+  [hidden]{display:none!important}
+  footer{margin-top:34px;color:var(--muted);font-size:13px;text-align:center}
+
+  /* ---- meishi card ---- */
+  .meishi{width:250px;background:#fff;border:3px solid var(--blue);border-radius:12px;padding:14px 16px;
+    box-shadow:0 4px 12px rgba(28,42,82,.18);position:relative;min-height:120px}
+  .meishi .tag{position:absolute;top:8px;right:10px;font-size:11px;color:var(--muted)}
+  .meishi .motif{position:absolute;bottom:10px;right:12px;font-size:30px}
+  .meishi .nm{font-family:'Baloo 2',sans-serif;font-size:24px;line-height:1.1;margin-top:8px;overflow-wrap:anywhere}
+  .meishi .cls{color:var(--muted);font-weight:700;margin-top:4px;font-size:14px}
+  .meishi .rule{height:4px;border-radius:2px;background:var(--orange);width:60%;margin-top:12px}
+  .builder{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .builder .controls{flex:1;min-width:250px}
+  .crow{margin-bottom:12px}
+  .crow label{font-weight:800;display:block;margin-bottom:4px;font-size:15px}
+  .crow input{font:inherit;font-weight:700;border:2px solid var(--line);border-radius:10px;padding:8px 12px;width:170px;background:#fff;color:var(--ink)}
+  .swatch{width:38px;height:38px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+  .swatch.on{border-color:var(--ink)}
+  .fly{transition:transform .7s ease,opacity .7s;transform:translateX(150px) rotate(6deg) scale(.85);opacity:.25}
+  @media (prefers-reduced-motion: reduce){ .fly{transition:none} }
+  .holdbtn{position:relative;overflow:hidden;border:0;border-radius:14px;background:var(--blue);color:#fff;
+    font:inherit;font-weight:800;font-size:17px;padding:14px 26px;cursor:pointer;box-shadow:0 3px 0 rgba(28,42,82,.28);touch-action:none;user-select:none;-webkit-user-select:none}
+  .holdbtn .fill{position:absolute;inset:0;width:0%;background:rgba(255,255,255,.28)}
+  .holdbtn span{position:relative}
+  .holdbtn:focus-visible{outline:3px solid var(--ink)}
+  .bchip{border:2.5px solid var(--line);border-radius:10px;padding:7px 10px;font-weight:800;font-size:16px;min-width:36px;background:#fff;text-align:center}
+  .bchip.lit{background:var(--greenT);border-color:var(--green);color:var(--green)}
+  .bchip.skipc{border-style:dashed;color:var(--muted);font-style:italic}
+  .bchip.pausec{border-color:var(--red);color:var(--red)}
+  .bchip .sub{display:block;font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.3px}
+  .shake{animation:shk .35s}
+  @keyframes shk{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  @media (prefers-reduced-motion: reduce){ .shake{animation:none} }
+</style>
+
+<header><div class="hbar">
+  <div style="font-size:30px">🎴</div>
+  <div><h1>Meishi Master</h1><div class="sub">Year 5 Japanese · Task 1 listening &amp; speaking trainer</div></div>
+  <div class="stars">⭐ <span id="starCount">0</span></div>
+</div></header>
+
+<div class="wrap">
+  <div class="banner hide" id="voiceBanner">🔈 Use <b>Chrome</b> or <b>Edge</b> for the best Japanese voice. Recording buttons appear only on the school-hosted copy of this page — on other copies, train with the Beat Drum! 🥁</div>
+
+  <div class="setup">
+    <label for="nameIn">Your name:</label>
+    <input id="nameIn" maxlength="20" placeholder="e.g. Mia" autocomplete="off">
+    <label>Your age:</label>
+    <div class="agechips" id="ageChips" role="group" aria-label="Choose your age"></div>
+  </div>
+
+  <nav class="tabs" style="grid-template-columns:repeat(5,1fr)">
+    <button class="tab t1 on" data-st="listen"><span class="big">🎧</span>Listen</button>
+    <button class="tab t2" data-st="quiz"><span class="big">👂</span>Quiz</button>
+    <button class="tab t3" data-st="speak"><span class="big">🎤</span>Speak</button>
+    <button class="tab t2" data-st="card" style="background:var(--green)"><span class="big">🎴</span>My Card</button>
+    <button class="tab t4" data-st="dojo"><span class="big">🥋</span>Rehearsal</button>
+  </nav>
+
+  <!-- ============ LISTEN ============ -->
+  <section class="station" id="st-listen">
+    <div class="stationhead">🎧 Listen &amp; Learn</div>
+    <p class="hint">Tap ▶ to hear each phrase, 🐢 for slow. Listen, then whisper it back like an echo.</p>
+    <div class="quizbox" style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <span class="qq" style="margin:0">📜 The whole exchange — start to finish</span>
+        <button class="play" id="playAll">▶ Play it all</button>
+      </div>
+      <div id="fullScript" style="margin-top:10px"></div>
+    </div>
+    <div id="phraseList"></div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="station" id="st-quiz" hidden>
+    <div class="stationhead">👂 Listening Quiz</div>
+    <p class="hint">8 questions. Listen carefully — you can replay as many times as you like.</p>
+    <div class="quizbox">
+      <div id="quizStart" class="center">
+        <p style="font-size:40px;margin:6px">🐱</p>
+        <p style="font-weight:800">Tama says: ears ready? Every correct answer earns a star!</p>
+        <button class="bigbtn" id="quizGo">Start the quiz ▶</button>
+      </div>
+      <div id="quizPlay" hidden>
+        <div class="progress" id="quizDots"></div>
+        <p class="qq" id="quizQ"></p>
+        <div class="center" style="margin-bottom:12px">
+          <button class="play" id="quizReplay">▶ Play it</button>
+          <button class="play slow" id="quizSlow">🐢 Slow</button>
+        </div>
+        <div class="opts" id="quizOpts"></div>
+        <div class="feedback" id="quizFb"></div>
+        <div class="center"><button class="bigbtn" id="quizNext" hidden>Next ➜</button></div>
+      </div>
+      <div id="quizEnd" class="center" hidden>
+        <p style="font-size:40px;margin:6px">🎉</p>
+        <p class="qq" id="quizScore"></p>
+        <p id="quizMsg" style="font-weight:700"></p>
+        <button class="bigbtn green" id="quizAgain">Play again 🔁</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SPEAK ============ -->
+  <section class="station" id="st-speak" hidden>
+    <div class="stationhead">🎤 Speaking Dojo — the Beat Drum</div>
+    <p class="hint">No microphone needed! Hear the model, then <b>say the line out loud while tapping the drum — one tap for every beat</b>. Light up every beat for perfect rhythm!</p>
+    <div class="speakbox">
+      <p class="qq" id="spTitle"></p>
+      <div class="center">
+        <div class="ro" id="spRo" style="font-size:24px"></div>
+        <div class="kana jp" id="spKana"></div>
+        <div class="en" id="spEn" style="margin-bottom:12px"></div>
+        <button class="play" id="spModel">▶ Hear the model</button>
+        <button class="play slow" id="spSlow">🐢 Slow</button>
+      </div>
+      <div id="spBeats" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:14px 0"></div>
+      <div class="center">
+        <button class="mic" id="spDrum">🥁 Say it &amp; TAP the beats!</button>
+        <button class="bigbtn" id="spReset" style="padding:11px 16px" title="start again">↺</button>
+      </div>
+      <div class="feedback center" id="spFb"></div>
+      <div class="center starrow" id="spStars"></div>
+      <div class="center" id="micPanel" hidden style="margin:6px 0 2px">
+        <button class="mic" id="spRec">⏺ Record me</button>
+        <button class="bigbtn green" id="spPlay" hidden>▶ My recording</button>
+        <button class="mic" id="spListen" style="background:var(--purple)">🎤 Sensei, check me!</button>
+      </div>
+      <div class="heard" id="spHeard" hidden></div>
+      <div class="selfrow center">Said it 3 times smoothly, out loud? <button id="spSelfBtn">Give myself a star ⭐</button></div>
+      <div class="center" style="margin-top:14px">
+        <button class="bigbtn" id="spPrev">⬅ Back</button>
+        <span style="font-weight:800" id="spCount"></span>
+        <button class="bigbtn" id="spNext">Next ➜</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MY CARD ============ -->
+  <section class="station" id="st-card" hidden>
+    <div class="stationhead">🎴 Build Your Meishi</div>
+    <p class="hint">This is the card you&rsquo;ll exchange in the Rehearsal. Make it neat, clear and school-safe — just like your real one!</p>
+    <div class="speakbox builder">
+      <div class="controls">
+        <div class="crow"><label for="clsIn">Class:</label><input id="clsIn" maxlength="10" placeholder="e.g. 5B" autocomplete="off"></div>
+        <div class="crow"><label>Japanese design element:</label>
+          <div class="agechips" id="motifChips"></div></div>
+        <div class="crow"><label>Card colour:</label>
+          <div class="agechips" id="colChips"></div></div>
+        <div style="font-size:13.5px;color:var(--muted);line-height:1.7">
+          ✔ Name is the largest item &nbsp;·&nbsp; ✔ No -san on your own name!<br>
+          ✔ Class on the card &nbsp;·&nbsp; ✔ One design element &nbsp;·&nbsp; ✔ No private details
+        </div>
+      </div>
+      <div id="cardPreview"></div>
+    </div>
+  </section>
+
+  <!-- ============ REHEARSAL ============ -->
+  <section class="station" id="st-dojo" hidden>
+    <div class="stationhead">🥋 Full Rehearsal — with Mia-sensei</div>
+    <p class="hint">The real Task 1, start to finish. Sensei speaks — you answer OUT LOUD, then tap ✔. Aim for 60–90 seconds!</p>
+    <div class="dojo">
+      <div id="dojoStart" class="center">
+        <p style="font-size:44px;margin:6px">🦊</p>
+        <p style="font-weight:800">Mia-sensei 🦊 is waiting. Build your card at 🎴 <b>My Card</b> first — you&rsquo;ll exchange it during the rehearsal!</p>
+        <label class="check" style="max-width:340px;margin:10px auto"><input type="checkbox" id="dojoQmode"> Surprise mode: sensei asks questions too!</label>
+        <label class="check" id="dojoRecRow" hidden style="max-width:340px;margin:0 auto 10px"><input type="checkbox" id="dojoRec"> ⏺ Record my whole rehearsal</label>
+        <button class="bigbtn orange" id="dojoGo">Begin the exchange 🙇</button>
+      </div>
+      <div id="dojoPlay" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="timer">⏱ <span id="dojoTime">0</span>s <span style="font-size:13px;color:var(--muted)">(target 60–90)</span></span>
+          <button class="play" id="dojoHearMe" title="Hear your line again">🔈 help</button>
+        </div>
+        <div id="dojoFeed"></div>
+        <div class="center" style="margin-top:10px">
+          <button class="bigbtn green" id="dojoDone" hidden>I said it out loud ✔</button>
+        </div>
+      </div>
+      <div id="dojoEnd" hidden>
+        <p class="qq center">🎊 Exchange complete — <span id="dojoFinal"></span>s!</p>
+        <div class="center" id="dojoPlayRow" hidden style="margin-bottom:8px">
+          <button class="bigbtn green" id="dojoPlayRec">▶ Listen to my rehearsal</button>
+          <a id="dojoDl" class="bigbtn" style="text-decoration:none;display:inline-block">⬇ Save it</a>
+        </div>
+        <p style="font-weight:800;text-align:center">Now mark yourself like sensei does:</p>
+        <label class="check"><input type="checkbox" class="rubric"> 🗣 Script — all four lines, from memory, clear voice</label>
+        <label class="check"><input type="checkbox" class="rubric"> 🙇 Bow — about 30°, before and after, no talking while bowing</label>
+        <label class="check"><input type="checkbox" class="rubric"> 🤲 Card — TWO hands to give AND receive</label>
+        <label class="check"><input type="checkbox" class="rubric"> 🤝 Interaction — responded to sensei without being rescued</label>
+        <div class="feedback center" id="dojoRubricFb"></div>
+        <div class="center"><button class="bigbtn" id="dojoAgain">Rehearse again 🔁</button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Meishi Master · Stage 3 Japanese · Task 1: The Meishi Exchange · がんばって！ 🦊🐱🐰</footer>
+</div>
+
+<script>
+'use strict';
+// ---------- data ----------
+const AGES = {
+  8:{ro:'has<s>sai</s>', kana:'はっさい', plain:'hassai', beats:[{t:'ha'},{t:'っ',pause:true},{t:'sa'},{t:'i'}]},
+  9:{ro:'kyuu-<s>sai</s>', kana:'きゅうさい', plain:'kyuu-sai', beats:[{t:'kyu'},{t:'u'},{t:'sa'},{t:'i'}]},
+  10:{ro:'juu-<s>sai</s>', kana:'じゅうさい', plain:'juu-sai', beats:[{t:'ju'},{t:'u'},{t:'sa'},{t:'i'}]},
+  11:{ro:'juu-is<s>sai</s>', kana:'じゅういっさい', plain:'juu-issai', beats:[{t:'ju'},{t:'u'},{t:'i'},{t:'っ',pause:true},{t:'sa'},{t:'i'}]},
+  12:{ro:'juu-ni-<s>sai</s>', kana:'じゅうにさい', plain:'juu-ni-sai', beats:[{t:'ju'},{t:'u'},{t:'ni'},{t:'sa'},{t:'i'}]}
+};
+const B = t => ({t});
+const DESU = [B('de'),B('su')];
+const state = { name:'', age:11, stars:0, cls:'', motif:'🌸', col:'#2242b8' };
+try{
+  state.name = localStorage.getItem('mm_name')||'';
+  state.age = parseInt(localStorage.getItem('mm_age'))||11;
+  state.stars = parseInt(localStorage.getItem('mm_stars'))||0;
+  state.cls = localStorage.getItem('mm_cls')||'';
+  state.motif = localStorage.getItem('mm_motif')||'🌸';
+  state.col = localStorage.getItem('mm_col')||'#2242b8';
+}catch(e){}
+function meishiHTML(o){
+  return '<div class="meishi" style="border-color:'+o.col+'">'+
+    '<div class="tag jp">めいし</div>'+
+    '<div class="nm">'+(o.name||'Your Name')+'</div>'+
+    '<div class="cls">'+(o.sub ? o.sub : 'Class: '+(o.cls||'____'))+'</div>'+
+    '<div class="rule" style="background:'+o.col+'"></div>'+
+    '<div class="motif">'+o.motif+'</div></div>';
+}
+
+function phrases(){
+  const n = state.name.trim();
+  const a = AGES[state.age];
+  return [
+    {grp:'Your four lines', color:'var(--blue)', id:'l1',
+     ro:'Hajimemashite.', kana:'はじめまして。', tts:'はじめまして。',
+     en:'Nice to meet you. (smile & face sensei)', keys:['はじめまして'], beats:[B('ha'),B('ji'),B('me'),B('ma'),B('shi'),B('te')]},
+    {grp:'Your four lines', color:'var(--blue)', id:'l2',
+     ro:'Watashi wa '+(n?n:'[name]')+' desu.', kana:'わたしは '+(n?n:'…')+' です。',
+     tts:'わたしは、'+(n?n:'ミア')+'、です。',
+     en:'I am '+(n?n:'[name]')+'.', keys:['わたし','です'], beats:[B('wa'),B('ta'),B('shi'),B('wa'),{t:(n||'name'),skip:true},...DESU]},
+    {grp:'Your four lines', color:'var(--blue)', id:'l3',
+     ro:a.ro+' desu.', kana:a.kana+'です。', tts:a.kana+'です。',
+     en:'I am '+state.age+' years old.', keys:[a.kana,'です'], beats:[...a.beats,...DESU]},
+    {grp:'Your four lines', color:'var(--blue)', id:'l4',
+     ro:'Yoroshiku onegaishimasu.', kana:'よろしくおねがいします。', tts:'よろしくおねがいします。',
+     en:'Please treat me kindly. (small bow)', keys:['よろしく'], beats:[B('yo'),B('ro'),B('shi'),B('ku'),B('o'),B('ne'),B('ga'),B('i'),B('shi'),B('ma'),B('su')]},
+    {grp:'The card exchange', color:'var(--orange)', id:'e1',
+     ro:'Douzo.', kana:'どうぞ。', tts:'どうぞ。',
+     en:'Here you are. (give with two hands)', keys:['どうぞ']},
+    {grp:'The card exchange', color:'var(--orange)', id:'e2',
+     ro:'Arigatou gozaimasu.', kana:'ありがとうございます。', tts:'ありがとうございます。',
+     en:'Thank you. (receive with two hands)', keys:['ありがとう'], beats:[B('a'),B('ri'),B('ga'),B('to'),B('u'),B('go'),B('za'),B('i'),B('ma'),B('su')]},
+    {grp:'Sensei might ask…', color:'var(--purple)', id:'q1',
+     ro:'Onamae wa?', kana:'おなまえは？', tts:'おなまえは？',
+     en:'What is your name? → answer with line 2!', keys:['なまえ']},
+    {grp:'Sensei might ask…', color:'var(--purple)', id:'q2',
+     ro:'Nan-sai desu ka?', kana:'なんさいですか。', tts:'なんさいですか。',
+     en:'How old are you? → answer with line 3!', keys:['なんさい','何歳','何才']}
+  ];
+}
+const roHTML = s => s.replace(/<s>/g,'<span class="sai">').replace(/<\/s>/g,'</span>').replace(/juu/g,'<b>juu</b>');
+
+// ---------- audio ----------
+let jaVoice = null;
+function pickVoice(){
+  const vs = speechSynthesis.getVoices();
+  jaVoice = vs.find(v=>/^ja/i.test(v.lang)&&/google/i.test(v.name)) || vs.find(v=>/^ja/i.test(v.lang)) || null;
+  document.getElementById('voiceBanner').classList.toggle('hide', !!jaVoice);
+}
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text, slow){
+  return new Promise(res=>{
+    if(!('speechSynthesis' in window)) return res();
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if(jaVoice) u.voice = jaVoice;
+    u.lang='ja-JP'; u.rate = slow?0.6:0.9; u.pitch=1.05;
+    u.onend = res; u.onerror = res;
+    speechSynthesis.speak(u);
+  });
+}
+let actx=null;
+function chime(good){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const t=actx.currentTime;
+    [good?660:220, good?880:180].forEach((f,i)=>{
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.frequency.value=f; o.type='sine';
+      g.gain.setValueAtTime(0.12,t+i*0.12); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.12+0.25);
+      o.connect(g).connect(actx.destination); o.start(t+i*0.12); o.stop(t+i*0.12+0.3);
+    });
+  }catch(e){}
+}
+function addStars(n){
+  state.stars+=n;
+  document.getElementById('starCount').textContent = state.stars;
+  try{ localStorage.setItem('mm_stars', state.stars); }catch(e){}
+}
+
+// ---------- setup ----------
+const nameIn=document.getElementById('nameIn');
+nameIn.value = state.name;
+nameIn.addEventListener('input',()=>{ state.name=nameIn.value; try{localStorage.setItem('mm_name',state.name);}catch(e){} renderListen(); renderSpeak(); renderCard(); });
+const ageWrap=document.getElementById('ageChips');
+[8,9,10,11,12].forEach(a=>{
+  const b=document.createElement('button'); b.className='chip'+(a===state.age?' on':''); b.textContent=a;
+  b.onclick=()=>{ state.age=a; try{localStorage.setItem('mm_age',a);}catch(e){}
+    ageWrap.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',+c.textContent===a));
+    renderListen(); renderSpeak(); };
+  ageWrap.appendChild(b);
+});
+document.getElementById('starCount').textContent = state.stars;
+
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  ['listen','quiz','speak','card','dojo'].forEach(id=>document.getElementById('st-'+id).hidden = t.dataset.st!==id);
+  speechSynthesis && speechSynthesis.cancel();
+});
+
+// ---------- MY CARD ----------
+function renderCard(){ document.getElementById('cardPreview').innerHTML = meishiHTML(state); }
+const clsIn=document.getElementById('clsIn'); clsIn.value=state.cls;
+clsIn.addEventListener('input',()=>{ state.cls=clsIn.value; try{localStorage.setItem('mm_cls',state.cls);}catch(e){} renderCard(); });
+const MOTIFS=['🌸','🌊','🗻','🎏','⭐','🍣'];
+const mWrap=document.getElementById('motifChips');
+MOTIFS.forEach(m=>{ const b=document.createElement('button'); b.className='chip'+(m===state.motif?' on':''); b.textContent=m;
+  b.onclick=()=>{ state.motif=m; try{localStorage.setItem('mm_motif',m);}catch(e){}
+    mWrap.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.textContent===m)); renderCard(); };
+  mWrap.appendChild(b); });
+const COLS=['#2242b8','#2f9e44','#e8681a','#7c4dbc','#e0405a'];
+const cWrap=document.getElementById('colChips');
+COLS.forEach(cl=>{ const b=document.createElement('button'); b.className='swatch'+(cl===state.col?' on':''); b.style.background=cl;
+  b.setAttribute('aria-label','card colour'); b.onclick=()=>{ state.col=cl; try{localStorage.setItem('mm_col',cl);}catch(e){}
+    cWrap.querySelectorAll('.swatch').forEach(x=>x.classList.toggle('on',x===b)); renderCard(); };
+  cWrap.appendChild(b); });
+renderCard();
+
+// ---------- LISTEN ----------
+function scriptSteps(){
+  const n = state.name.trim()||'[name]';
+  const a = AGES[state.age];
+  return [
+    {who:'you', act:true,  txt:'🙇 Bow — about 30°, no talking while bowing'},
+    {who:'you', ro:'Hajimemashite.', tts:'はじめまして。'},
+    {who:'you', ro:'Watashi wa '+n+' desu.', tts:'わたしは、'+(state.name.trim()||'ミア')+'、です。'},
+    {who:'you', ro:a.ro+' desu.', tts:a.kana+'です。'},
+    {who:'you', ro:'Yoroshiku onegaishimasu.', tts:'よろしくおねがいします。', note:'small bow'},
+    {who:'you', ro:'Douzo.', tts:'どうぞ。', note:'offer YOUR meishi — two hands, writing facing sensei'},
+    {who:'sensei', ro:'Douzo.', tts:'どうぞ。', note:'receive sensei’s card with two hands · pause and read it'},
+    {who:'you', ro:'Arigatou gozaimasu.', tts:'ありがとうございます。'},
+    {who:'you', act:true, txt:'🙇 Finish with one more bow'}
+  ];
+}
+function renderScript(){
+  const box=document.getElementById('fullScript'); box.innerHTML='';
+  scriptSteps().forEach((s,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;gap:10px;align-items:center;padding:7px 4px;border-bottom:1.5px solid var(--line)';
+    const who = s.who==='sensei' ? '<span style="background:var(--purpleT);color:var(--purple);border:1.5px solid var(--purple);border-radius:999px;padding:1px 10px;font-size:12px;font-weight:800">🦊 SENSEI</span>'
+                                 : '<span style="background:var(--greenT);color:var(--green);border:1.5px solid var(--green);border-radius:999px;padding:1px 10px;font-size:12px;font-weight:800">🧒 YOU</span>';
+    if(s.act){
+      d.innerHTML='<span style="font-weight:800;color:var(--muted);width:20px">'+(i+1)+'</span>'+who+'<span style="font-weight:700;color:var(--muted);font-size:15px">'+s.txt+'</span>';
+    } else {
+      d.innerHTML='<span style="font-weight:800;color:var(--muted);width:20px">'+(i+1)+'</span>'+who+
+        '<span class="ro" style="font-size:17px;flex:1">'+roHTML(s.ro)+(s.note?'<span class="cue" style="margin-left:8px">'+s.note+'</span>':'')+'</span>';
+      const b=document.createElement('button'); b.className='play'; b.textContent='▶'; b.style.padding='6px 12px';
+      b.onclick=()=>speak(s.tts,false);
+      d.appendChild(b);
+    }
+    box.appendChild(d);
+  });
+}
+let playingAll=false;
+document.getElementById('playAll').onclick=async()=>{
+  if(playingAll){ playingAll=false; speechSynthesis.cancel(); document.getElementById('playAll').textContent='▶ Play it all'; return; }
+  playingAll=true; document.getElementById('playAll').textContent='⏹ Stop';
+  for(const s of scriptSteps()){
+    if(!playingAll) break;
+    if(s.tts){ await speak(s.tts,false); await new Promise(r=>setTimeout(r,650)); }
+  }
+  playingAll=false; document.getElementById('playAll').textContent='▶ Play it all';
+};
+function renderListen(){
+  renderScript();
+  const box=document.getElementById('phraseList'); box.innerHTML='';
+  let grp='';
+  phrases().forEach(p=>{
+    if(p.grp!==grp){ grp=p.grp; const g=document.createElement('div'); g.className='group'; g.textContent=grp; box.appendChild(g); }
+    const c=document.createElement('div'); c.className='pcard'; c.style.borderLeftColor=p.color;
+    c.innerHTML='<div class="txt"><div class="ro">'+roHTML(p.ro)+'</div><div class="kana jp">'+p.kana+'</div><div class="en">'+p.en+'</div></div>'+
+      '<div class="abtns"><button class="play">▶</button><button class="play slow">🐢</button></div>';
+    const [b1,b2]=c.querySelectorAll('button');
+    b1.onclick=()=>speak(p.tts,false); b2.onclick=()=>speak(p.tts,true);
+    box.appendChild(c);
+  });
+}
+renderListen();
+
+// ---------- QUIZ ----------
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let quiz={items:[],i:0,score:0,current:null};
+function buildQuiz(){
+  const ps = phrases().filter(p=>p.id!=='l2'&&p.id!=='l3');
+  const meanings={l1:'Nice to meet you',l4:'Please treat me kindly',e1:'Here you are',e2:'Thank you',q1:'What is your name?',q2:'How old are you?'};
+  const typeA = shuffle(ps.slice()).slice(0,5).map(p=>({
+    kind:'A', tts:p.tts, q:'What does this mean?',
+    answer:meanings[p.id],
+    opts:shuffle([meanings[p.id], ...shuffle(Object.values(meanings).filter(m=>m!==meanings[p.id])).slice(0,3)])
+  }));
+  const ageKeys=shuffle([8,9,10,11,12]).slice(0,3);
+  const typeB = ageKeys.map(a=>({
+    kind:'B', tts:AGES[a].kana+'です。', q:'How old is this person?',
+    answer:a+' years old',
+    opts:shuffle([8,9,10,11,12]).map(x=>x+' years old')
+  }));
+  quiz.items = shuffle([...typeA,...typeB]); quiz.i=0; quiz.score=0;
+}
+const $=id=>document.getElementById(id);
+$('quizGo').onclick=()=>{ buildQuiz(); $('quizStart').hidden=true; $('quizEnd').hidden=true; $('quizPlay').hidden=false; askQuiz(); };
+$('quizAgain').onclick=$('quizGo').onclick;
+function askQuiz(){
+  const it=quiz.items[quiz.i]; quiz.current=it;
+  $('quizDots').innerHTML = quiz.items.map((x,i)=>'<div class="dot '+(i<quiz.i?(x.hit?'hit':'miss'):(i===quiz.i?'now':''))+'"></div>').join('');
+  $('quizQ').textContent = 'Question '+(quiz.i+1)+' · '+it.q;
+  $('quizFb').textContent=''; $('quizNext').hidden=true;
+  const ob=$('quizOpts'); ob.innerHTML='';
+  it.opts.forEach(o=>{
+    const b=document.createElement('button'); b.className='opt'; b.textContent=o;
+    b.onclick=()=>{
+      ob.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+      it.hit = (o===it.answer);
+      b.classList.add(it.hit?'good':'bad');
+      if(!it.hit) [...ob.children].find(x=>x.textContent===it.answer).classList.add('good');
+      chime(it.hit);
+      if(it.hit){ quiz.score++; addStars(1); $('quizFb').textContent='⭐ Seikai! (Correct!)'; $('quizFb').style.color='var(--green)'; }
+      else { $('quizFb').textContent='Not quite — listen once more and remember it!'; $('quizFb').style.color='var(--red)'; }
+      $('quizNext').hidden=false;
+    };
+    ob.appendChild(b);
+  });
+  speak(it.tts,false);
+}
+$('quizReplay').onclick=()=>quiz.current&&speak(quiz.current.tts,false);
+$('quizSlow').onclick=()=>quiz.current&&speak(quiz.current.tts,true);
+$('quizNext').onclick=()=>{
+  quiz.i++;
+  if(quiz.i>=quiz.items.length){
+    $('quizPlay').hidden=true; $('quizEnd').hidden=false;
+    $('quizScore').textContent='You scored '+quiz.score+' / '+quiz.items.length;
+    $('quizMsg').textContent = quiz.score>=7?'Sugoi! Your ears are Task-1 ready! 🏆':(quiz.score>=5?'Nice work — one more round and you’ll ace it! 💪':'Good start! Visit the Listen station, then try again. 🎧');
+  } else askQuiz();
+};
+
+// ---------- SPEAK (beat drum — no mic needed) ----------
+let sp={i:0, tap:0, selfDone:false};
+function speakables(){ return phrases().filter(p=>['l1','l2','l3','l4','e2'].includes(p.id)); }
+function beatChips(p, upto){
+  return p.beats.map((b,i)=>{
+    const cls='bchip'+(b.skip?' skipc':'')+(b.pause?' pausec':'')+(i<upto?' lit':'');
+    const sub=b.pause?'<span class="sub">tiny pause!</span>':(b.skip?'<span class="sub">your name</span>':'');
+    return '<div class="'+cls+'"><span class="jp">'+b.t+'</span>'+sub+'</div>';
+  }).join('');
+}
+function renderSpeak(){
+  const list=speakables(); const p=list[sp.i]; sp.tap=0; sp.selfDone=false;
+  $('spTitle').textContent='Phrase '+(sp.i+1)+' of '+list.length;
+  $('spRo').innerHTML=roHTML(p.ro); $('spKana').textContent=p.kana; $('spEn').textContent=p.en;
+  $('spCount').textContent=' '+(sp.i+1)+' / '+list.length+' ';
+  $('spBeats').innerHTML=beatChips(p,0);
+  $('spStars').textContent=''; $('spFb').textContent='';
+  $('spDrum').disabled=false;
+  const h=document.getElementById('spHeard'); if(h) h.hidden=true;
+  const pl=document.getElementById('spPlay'); if(pl) pl.hidden=true;
+}
+function tick(){
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const t=actx.currentTime, o=actx.createOscillator(), g=actx.createGain();
+    o.frequency.value=520; o.type='triangle';
+    g.gain.setValueAtTime(0.15,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.09);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t+0.1);
+  }catch(e){}
+}
+renderSpeak();
+$('spPrev').onclick=()=>{ sp.i=(sp.i-1+speakables().length)%speakables().length; renderSpeak(); };
+$('spNext').onclick=()=>{ sp.i=(sp.i+1)%speakables().length; renderSpeak(); };
+$('spModel').onclick=()=>speak(speakables()[sp.i].tts,false);
+$('spSlow').onclick=()=>speak(speakables()[sp.i].tts,true);
+$('spReset').onclick=()=>{ sp.tap=0; const p=speakables()[sp.i]; $('spBeats').innerHTML=beatChips(p,0); $('spFb').textContent=''; $('spStars').textContent=''; $('spDrum').disabled=false; };
+$('spDrum').onclick=()=>{
+  const p=speakables()[sp.i]; const total=p.beats.length;
+  if(sp.tap>=total) return;
+  sp.tap++;
+  // auto-light skip chips (your name) without needing a tap
+  while(sp.tap<total && p.beats[sp.tap] && p.beats[sp.tap].skip) sp.tap++;
+  tick();
+  $('spBeats').innerHTML=beatChips(p,sp.tap);
+  if(sp.tap>=total){
+    $('spDrum').disabled=true;
+    $('spStars').textContent='⭐⭐⭐';
+    addStars(3); chime(true);
+    $('spFb').style.color='var(--green)';
+    $('spFb').textContent='Perfect rhythm — all '+total+' beats! Now say it again a little faster.';
+  } else {
+    $('spFb').style.color='var(--muted)';
+    $('spFb').textContent=sp.tap+' / '+total+' beats…';
+  }
+};
+$('spSelfBtn').onclick=()=>{
+  if(sp.selfDone) return; sp.selfDone=true;
+  addStars(1); chime(true);
+  $('spFb').style.color='var(--green)';
+  $('spFb').textContent='Bonus star! Honest dojo training — sensei approves. 🙇';
+};
+// ---------- MIC (works only on a normally-hosted https copy of this page) ----------
+const SRC = window.SpeechRecognition||window.webkitSpeechRecognition;
+const micSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.isSecureContext);
+let micStream=null, rec=null, recChunks=[], recURL=null, recBusy=false;
+async function getMic(){
+  if(micStream) return micStream;
+  micStream = await navigator.mediaDevices.getUserMedia({audio:true});
+  return micStream;
+}
+function scoreTranscript(tr, p){
+  const t=(tr||'').replace(/[\s、。，,.！!？?]/g,'');
+  let hits=0;
+  (p.keys||[]).forEach(k=>{ if(k.split('|').some(v=>v&&t.includes(v))) hits++; });
+  return {hits, total:(p.keys||[]).length||1};
+}
+if(micSupported){
+  $('micPanel').hidden=false;
+  const rr=document.getElementById('dojoRecRow'); if(rr) rr.hidden=false;
+}
+if(micSupported){
+  $('spRec').onclick=async()=>{
+    try{
+      if(rec && rec.state==='recording'){ rec.stop(); return; }
+      const st=await getMic();
+      recChunks=[]; rec=new MediaRecorder(st);
+      rec.ondataavailable=e=>recChunks.push(e.data);
+      rec.onstop=()=>{
+        if(recURL) URL.revokeObjectURL(recURL);
+        recURL=URL.createObjectURL(new Blob(recChunks,{type:rec.mimeType||'audio/webm'}));
+        $('spRec').classList.remove('rec'); $('spRec').textContent='⏺ Record me';
+        $('spPlay').hidden=false; chime(true);
+        $('spFb').style.color='var(--green)'; $('spFb').textContent='Got it! Play it back and compare with the model.';
+      };
+      rec.start();
+      $('spRec').classList.add('rec'); $('spRec').textContent='⏹ Stop';
+      $('spFb').style.color='var(--red)'; $('spFb').textContent='Recording… say your line!';
+    }catch(e){
+      $('spFb').style.color='var(--red)';
+      $('spFb').textContent='Mic blocked — click the 🔒/camera icon in the address bar and Allow the microphone.';
+    }
+  };
+  $('spPlay').onclick=()=>{ if(recURL) new Audio(recURL).play(); };
+  $('spListen').onclick=()=>{
+    if(!SRC){ $('spFb').style.color='var(--muted)'; $('spFb').textContent='This browser can’t speech-check — use ⏺ Record me and compare by ear!'; return; }
+    if(recBusy) return; recBusy=true;
+    const p=speakables()[sp.i];
+    const r=new SRC(); r.lang='ja-JP'; r.interimResults=false; r.maxAlternatives=3;
+    $('spListen').classList.add('rec'); $('spListen').textContent='👂 listening…';
+    let done=false;
+    const fin=tr=>{
+      if(done)return; done=true; recBusy=false;
+      $('spListen').classList.remove('rec'); $('spListen').textContent='🎤 Sensei, check me!';
+      if(tr===null){ $('spFb').style.color='var(--muted)'; $('spFb').textContent='Sensei heard nothing — check the mic and try once more.'; return; }
+      $('spHeard').hidden=false; $('spHeard').innerHTML='🦻 Sensei heard: <b class="jp">'+(tr||'…')+'</b>';
+      const sc=scoreTranscript(tr,p);
+      const stars=sc.hits>=sc.total?3:(sc.hits>0?2:1);
+      $('spStars').textContent='⭐'.repeat(stars); addStars(stars); chime(stars>1);
+      $('spFb').style.color = stars===3?'var(--green)':(stars===2?'var(--orange)':'var(--red)');
+      $('spFb').textContent = stars===3?'Perfect! Jouzu desu ne!':(stars===2?'So close — copy the model’s rhythm once more.':'Brave try! Listen 🐢 slow, then again.');
+    };
+    r.onresult=e=>fin(e.results[0][0].transcript);
+    r.onerror=()=>fin(null); r.onend=()=>{ if(!done) fin(null); };
+    try{ r.start(); }catch(e){ fin(null); }
+  };
+}
+let dojoRecorder=null, dojoChunks=[], dojoURL=null;
+async function dojoRecStart(){
+  try{
+    const st=await getMic();
+    dojoChunks=[]; dojoRecorder=new MediaRecorder(st);
+    dojoRecorder.ondataavailable=e=>dojoChunks.push(e.data);
+    dojoRecorder.start();
+  }catch(e){ dojoRecorder=null; }
+}
+function dojoRecStop(){
+  return new Promise(res=>{
+    if(!dojoRecorder || dojoRecorder.state!=='recording') return res();
+    dojoRecorder.onstop=()=>{
+      if(dojoURL) URL.revokeObjectURL(dojoURL);
+      dojoURL=URL.createObjectURL(new Blob(dojoChunks,{type:dojoRecorder.mimeType||'audio/webm'}));
+      const row=$('dojoPlayRow'); row.hidden=false;
+      $('dojoPlayRec').onclick=()=>new Audio(dojoURL).play();
+      const dl=$('dojoDl'); dl.href=dojoURL; dl.download='my-meishi-rehearsal.webm';
+      res();
+    };
+    dojoRecorder.stop();
+  });
+}
+// ---------- REHEARSAL ----------
+let dojo={steps:[],i:0,timer:null,secs:0};
+function buildDojo(qmode){
+  const ph=phrases(); const get=id=>ph.find(p=>p.id===id);
+  const s=[];
+  s.push({who:'sensei', p:get('l1'), cue:'🙇 Bow first — about 30°!'});
+  if(qmode){
+    s.push({who:'you', p:get('l1'), note:'Reply to sensei!'});
+    s.push({who:'sensei', p:get('q1')});
+    s.push({who:'you', p:get('l2'), note:'Answer with your name'});
+    s.push({who:'sensei', p:get('q2')});
+    s.push({who:'you', p:get('l3'), note:'Answer with your age', cue:'⚡ special form!'});
+  } else {
+    s.push({who:'you', p:get('l1'), note:'Line 1'});
+    s.push({who:'you', p:get('l2'), note:'Line 2'});
+    s.push({who:'you', p:get('l3'), note:'Line 3'});
+  }
+  s.push({who:'you', p:get('l4'), note:'Finish your intro', cue:'🙇 small bow'});
+  s.push({type:'give'});
+  s.push({who:'sensei', p:get('e1'), cue:'Sensei offers HIS card…'});
+  s.push({type:'receive'});
+  s.push({type:'look'});
+  s.push({who:'you', p:get('e2'), note:'Thank sensei', cue:'🙇 finish with a bow'});
+  return s;
+}
+const SENSEI_CARD={name:'Mia-sensei', sub:'Year 5 Japanese · 37 years old', motif:'🌸', col:'#7c4dbc'};
+function holdStep(labelTxt, cardO, onDone){
+  const feed=$('dojoFeed');
+  const box=document.createElement('div'); box.className='center'; box.style.margin='10px 0';
+  box.innerHTML=(cardO?'<div style="display:inline-block" class="mcard">'+meishiHTML(cardO)+'</div><br>':'')+
+    '<button class="holdbtn" style="margin-top:10px"><div class="fill"></div><span>🤲 '+labelTxt+' — press &amp; HOLD</span></button>'+
+    '<div class="feedback" style="font-size:14px"></div>';
+  feed.appendChild(box); box.scrollIntoView({block:'nearest'});
+  const btn=box.querySelector('.holdbtn'), fill=box.querySelector('.fill'), fb=box.querySelector('.feedback');
+  let t0=null, raf=null, doneFlag=false;
+  const NEED=1100;
+  function tick(){ if(t0===null)return;
+    const el=Date.now()-t0; fill.style.width=Math.min(100,el/NEED*100)+'%';
+    if(el>=NEED){ finish(); return; } raf=requestAnimationFrame(tick); }
+  function finish(){ if(doneFlag)return; doneFlag=true; cancelAnimationFrame(raf);
+    fill.style.width='100%'; btn.disabled=true; chime(true); onDone(box); }
+  function stop(){ if(doneFlag||t0===null)return; cancelAnimationFrame(raf); t0=null; fill.style.width='0%';
+    btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
+    fb.style.color='var(--red)'; fb.textContent='Too quick! Two hands means slow and deliberate — hold it longer. 🙇'; }
+  btn.addEventListener('pointerdown',e=>{ e.preventDefault(); if(doneFlag)return; fb.textContent=''; t0=Date.now(); tick(); });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>btn.addEventListener(ev,stop));
+  btn.addEventListener('keydown',e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); if(t0===null&&!doneFlag){ t0=Date.now()-NEED; tick(); } } });
+}
+$('dojoGo').onclick=async()=>{
+  dojo.steps=buildDojo($('dojoQmode').checked); dojo.i=0; dojo.secs=0;
+  if(micSupported && $('dojoRec') && $('dojoRec').checked) await dojoRecStart();
+  $('dojoStart').hidden=true; $('dojoEnd').hidden=true; $('dojoPlay').hidden=false;
+  $('dojoFeed').innerHTML='';
+  clearInterval(dojo.timer);
+  dojo.timer=setInterval(()=>{ dojo.secs++; $('dojoTime').textContent=dojo.secs; },1000);
+  stepDojo();
+};
+async function stepDojo(){
+  if(dojo.i>=dojo.steps.length) return endDojo();
+  const st=dojo.steps[dojo.i];
+  const feed=$('dojoFeed');
+  if(st.type==='give'){
+    $('dojoDone').hidden=true;
+    const d=document.createElement('div'); d.className='bubble you';
+    d.innerHTML='<div class="face">🧒</div><div class="say"><div class="who">THE MEISHI EXCHANGE</div>Now offer YOUR card — writing facing sensei!</div>';
+    feed.appendChild(d);
+    holdStep('Offer my meishi with two hands', state, (box)=>{
+      const mc=box.querySelector('.mcard'); if(mc) mc.classList.add('fly');
+      addStars(2);
+      const r=document.createElement('div'); r.className='bubble';
+      r.innerHTML='<div class="face">🦊</div><div class="say"><div class="who">MIA-SENSEI</div><div class="ro" style="font-size:18px">Arigatou gozaimasu!</div><span class="cue">He takes it with two hands and reads it 👀</span></div>';
+      feed.appendChild(r); r.scrollIntoView({block:'nearest'});
+      speak('ありがとうございます。',false).then(()=>{ dojo.i++; setTimeout(stepDojo,300); });
+    });
+    return;
+  }
+  if(st.type==='receive'){
+    $('dojoDone').hidden=true;
+    holdStep('Receive sensei’s card with two hands', null, (box)=>{
+      addStars(2);
+      const c=document.createElement('div'); c.className='center';
+      c.innerHTML='<div style="display:inline-block">'+meishiHTML(SENSEI_CARD)+'</div>';
+      box.appendChild(c);
+      dojo.i++; setTimeout(stepDojo,300);
+    });
+    return;
+  }
+  if(st.type==='look'){
+    $('dojoDone').hidden=true;
+    const d=document.createElement('div'); d.className='bubble you';
+    d.innerHTML='<div class="face">👀</div><div class="say"><div class="who">CARD CARE</div>Pause and READ sensei&rsquo;s card&hellip; <b><span id="lookN">3</span></b><br><span class="cue">Never grab it, fold it, or pocket it straight away!</span> <span class="cue">Her card says 37 — <b>san-juu-nana-sai</b>!</span></div>';
+    feed.appendChild(d); d.scrollIntoView({block:'nearest'});
+    let n=3; const iv=setInterval(()=>{ n--; const el=document.getElementById('lookN');
+      if(el) el.textContent=Math.max(n,0);
+      if(n<=0){ clearInterval(iv); dojo.i++; stepDojo(); } },900);
+    return;
+  }
+  if(st.who==='sensei'){
+    const d=document.createElement('div'); d.className='bubble';
+    d.innerHTML='<div class="face">🦊</div><div class="say"><div class="who">MIA-SENSEI</div><div class="ro" style="font-size:18px">'+roHTML(st.p.ro)+'</div>'+(st.cue?'<span class="cue">'+st.cue+'</span>':'')+'</div>';
+    feed.appendChild(d); d.scrollIntoView({block:'nearest'});
+    $('dojoDone').hidden=true;
+    await speak(st.p.tts,false);
+    dojo.i++; setTimeout(stepDojo,400);
+  } else {
+    const d=document.createElement('div'); d.className='bubble you';
+    d.innerHTML='<div class="face">🧒</div><div class="say"><div class="who">YOUR TURN — '+(st.note||'')+'</div><div class="ro" style="font-size:18px">'+roHTML(st.p.ro)+'</div>'+(st.cue?'<span class="cue">'+st.cue+'</span>':'')+'</div>';
+    feed.appendChild(d); d.scrollIntoView({block:'nearest'});
+    if(st.p.beats){ const bc=document.createElement('div'); bc.style.cssText='display:flex;flex-wrap:wrap;gap:4px;margin-top:6px'; bc.innerHTML=beatChips(st.p,0); d.querySelector('.say').appendChild(bc); }
+    $('dojoDone').hidden=false;
+    $('dojoHearMe').onclick=()=>speak(st.p.tts,true);
+  }
+}
+function advanceYou(stars){
+  if(stars) addStars(stars);
+  dojo.i++; $('dojoDone').hidden=true; stepDojo();
+}
+$('dojoDone').onclick=()=>{ chime(true); advanceYou(1); };
+function endDojo(){
+  clearInterval(dojo.timer);
+  dojoRecStop();
+  $('dojoPlay').hidden=true; $('dojoEnd').hidden=false;
+  $('dojoFinal').textContent=dojo.secs;
+  document.querySelectorAll('.rubric').forEach(c=>c.checked=false);
+  $('dojoRubricFb').textContent='';
+  document.querySelectorAll('.rubric').forEach(c=>c.onchange=()=>{
+    const n=[...document.querySelectorAll('.rubric')].filter(x=>x.checked).length;
+    $('dojoRubricFb').style.color='var(--green)';
+    $('dojoRubricFb').textContent = n===4?'⭐⭐⭐⭐ A-range exchange — you are ready for Week 8!':(n>=2?'Strong! Practise the unticked ones and rehearse again.':'');
+    if(n===4){ addStars(4); chime(true); }
+  });
+}
+$('dojoAgain').onclick=()=>{ $('dojoEnd').hidden=true; $('dojoStart').hidden=false; $('dojoPlayRow').hidden=true; };
+</script>
