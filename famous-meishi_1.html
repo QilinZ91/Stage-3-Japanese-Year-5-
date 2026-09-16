@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Famous Meishi Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --red:#bc002d; --red-deep:#8f0022; --pink-line:#efc3cb; --pink-soft:#f6dde2;
+  --paper:#ffffff; --wash:#faf6f6; --ink:#26232a; --sub:#7b6f73;
+  --romaji:#2f9e44; --sai:#e0405a; --gold:#c8a028;
+  --disp:"Baloo 2","Nunito",system-ui,sans-serif;
+  --body:"Nunito","Noto Sans JP",system-ui,sans-serif;
+  --jp:"Noto Sans JP","Nunito",sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--wash);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button{font-family:var(--disp);cursor:pointer}
+input,textarea,select{font-family:var(--body);color:var(--ink)}
+:focus-visible{outline:3px solid #f0a4b2;outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- header ---------- */
+header{background:var(--paper);border-bottom:2px solid var(--pink-line);padding:14px 20px 0}
+.hrow{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mark{display:flex;align-items:center;gap:11px}
+.sun{width:40px;height:40px;border-radius:50%;background:var(--red);display:grid;place-items:center;color:#fff;font-size:21px;flex:none;box-shadow:0 2px 0 var(--red-deep)}
+.mark h1{font-family:var(--disp);font-weight:800;font-size:23px;margin:0;line-height:1.05;letter-spacing:.2px}
+.mark .jp{font-family:var(--jp);font-size:12px;color:var(--sub);font-weight:500;letter-spacing:.14em}
+.hspace{flex:1}
+.saveline{font-size:12.5px;color:var(--sub)}
+.saveline b{color:var(--romaji)}
+#resetBtn{background:none;border:1.5px solid var(--pink-line);color:var(--sub);border-radius:99px;font-size:12.5px;padding:4px 12px;font-weight:600}
+#resetBtn:hover{border-color:var(--red);color:var(--red)}
+nav{max-width:1180px;margin:10px auto 0;display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:2px solid var(--pink-line);border-bottom:none;background:var(--wash);color:var(--sub);
+  font-weight:700;font-size:14.5px;padding:8px 15px 9px;border-radius:12px 12px 0 0;display:flex;gap:7px;align-items:center}
+.tab .n{width:20px;height:20px;border-radius:50%;background:var(--pink-soft);color:var(--red);display:grid;place-items:center;font-size:11.5px;font-weight:800}
+.tab.on{background:var(--red);border-color:var(--red);color:#fff}
+.tab.on .n{background:#fff}
+.tab.done .n{background:var(--romaji);color:#fff}
+.tab.on.done .n{background:#fff;color:var(--romaji)}
+
+/* ---------- layout ---------- */
+main{max-width:1180px;margin:0 auto;padding:22px 20px 70px;display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:26px;align-items:start}
+@media (max-width:940px){main{grid-template-columns:1fr}.rail{position:static!important;order:-1}}
+.rail{position:sticky;top:16px;display:flex;flex-direction:column;gap:12px}
+.railcap{font-family:var(--disp);font-weight:700;font-size:13px;color:var(--sub);letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- common bits ---------- */
+.bubble{background:var(--paper);border:2px solid var(--pink-line);border-radius:16px;padding:13px 16px 13px 58px;position:relative;margin:0 0 16px}
+.bubble .who{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:30px}
+.bubble b.hl{color:var(--red)}
+.card-sec{background:var(--paper);border:2px solid var(--pink-line);border-radius:16px;padding:16px 18px;margin:0 0 16px}
+.card-sec h2{font-family:var(--disp);font-size:18px;font-weight:800;margin:0 0 10px;color:var(--red);display:flex;align-items:center;gap:8px}
+.card-sec h2 .step{font-size:11px;background:var(--red);color:#fff;border-radius:99px;padding:2px 9px;letter-spacing:.08em}
+.hint{font-size:13px;color:var(--sub)}
+.field{margin:0 0 12px}
+.field label{display:block;font-weight:800;font-size:14px;margin:0 0 4px}
+.field label .opt{font-weight:600;color:var(--sub);font-size:12.5px}
+.field input[type=text],.field input[type=number],.field textarea{
+  width:100%;border:2px solid var(--pink-line);border-radius:10px;padding:9px 11px;font-size:15px;background:#fff}
+.field textarea{resize:vertical;min-height:58px}
+.field input:focus,.field textarea:focus{border-color:var(--red);outline:none}
+.frow{display:flex;gap:12px;flex-wrap:wrap}
+.frow .field{flex:1;min-width:150px}
+.pillbtn{background:var(--red);color:#fff;border:none;border-radius:99px;font-weight:800;font-size:15px;padding:9px 20px;box-shadow:0 2px 0 var(--red-deep)}
+.pillbtn:hover{background:var(--red-deep)}
+.pillbtn.ghost{background:#fff;color:var(--red);border:2px solid var(--red);box-shadow:none;padding:7px 18px}
+.pillbtn.small{font-size:13px;padding:6px 14px}
+.ro{color:var(--romaji);font-weight:800}
+.ro b{color:var(--romaji)}
+.sai{color:var(--sai);font-weight:800}
+.kana{font-family:var(--jp)}
+.chip{display:inline-block;background:var(--pink-soft);color:var(--red-deep);border-radius:99px;padding:2px 11px;font-size:12.5px;font-weight:800}
+.notice{border:2px dashed var(--pink-line);border-radius:12px;padding:10px 13px;font-size:13.5px;color:var(--sub);background:#fff}
+
+/* ---------- star picker ---------- */
+.stars{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px}
+.starbtn{border:2px solid var(--pink-line);background:#fff;border-radius:13px;padding:10px 8px 8px;text-align:center;font-family:var(--body)}
+.starbtn .em{font-size:27px;display:block;line-height:1.15}
+.starbtn .nm{font-weight:800;font-size:13.5px;display:block;margin-top:3px}
+.starbtn .wh{font-size:11px;color:var(--sub);display:block;margin-top:1px}
+.starbtn:hover{border-color:var(--red)}
+.starbtn.sel{border-color:var(--red);background:var(--red);box-shadow:0 2px 0 var(--red-deep)}
+.starbtn.sel .nm{color:#fff}.starbtn.sel .wh{color:#f6cdd6}
+
+/* ---------- age converter ---------- */
+.agebox{border:2px solid var(--pink-line);border-radius:12px;background:#fff;padding:11px 14px;margin-top:8px}
+.agebox .big{font-size:21px;font-family:var(--disp);font-weight:700}
+.agebox .kana{font-size:16px;margin-top:2px;color:var(--ink)}
+.agebox .note{font-size:12.5px;color:var(--gold);font-weight:700;margin-top:3px}
+
+/* ---------- meishi card ---------- */
+.meishi{width:340px;height:206px;border-radius:12px;position:relative;box-shadow:0 6px 18px rgba(60,10,25,.14);
+  padding:16px 18px;display:flex;flex-direction:column;overflow:hidden;flex:none}
+.meishi .tag{font-size:11.5px;font-weight:700;letter-spacing:.03em;opacity:.85}
+.meishi .mid{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0;padding-right:78px}
+.meishi .kn{font-family:var(--jp);font-weight:900;line-height:1.12;letter-spacing:.02em;overflow-wrap:anywhere}
+.meishi .rn{font-size:13px;font-weight:700;opacity:.8;margin-top:3px}
+.meishi .agel{font-size:14px;font-weight:800}
+.meishi .agel .kana{font-family:var(--jp)}
+.meishi .motif{position:absolute;right:14px;bottom:12px;font-size:56px;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.12))}
+.meishi .motif.ms-s{font-size:34px}.meishi .motif.ms-l{font-size:88px}
+.meishi .motifimg{position:absolute;right:12px;bottom:10px;width:76px;height:76px;border-radius:10px;object-fit:cover;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.meishi .motifimg.ms-s{width:48px;height:48px}.meishi .motifimg.ms-l{width:112px;height:112px}
+.meishi.b-line{border:3px solid}
+.meishi.b-double{border:4px double}
+.meishi.b-corner{border:none}
+.meishi .cnr{position:absolute;width:26px;height:26px;border-color:inherit}
+.meishi.b-corner .cnr{border:3px solid}
+.meishi .cnr.tl{top:8px;left:8px;border-right:none;border-bottom:none;border-radius:6px 0 0 0}
+.meishi .cnr.br{bottom:8px;right:8px;border-left:none;border-top:none;border-radius:0 0 6px 0}
+.meishi.hidden-name .kn,.meishi.hidden-name .rn{filter:blur(0px)}
+.meishi.hidden-name .kn{background:repeating-linear-gradient(45deg,#0002,#0002 6px,#0001 6px,#0001 12px)}
+.qmark{font-family:var(--disp)}
+
+/* ---------- swatches / pickers ---------- */
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:40px;height:40px;border-radius:10px;border:2px solid var(--pink-line);position:relative}
+.sw.sel{border-color:var(--ink);box-shadow:0 0 0 2px #fff inset}
+.emgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:5px}
+.emg{font-size:21px;background:#fff;border:2px solid var(--pink-line);border-radius:9px;padding:4px 0;font-family:var(--body)}
+.emg.sel{border-color:var(--red);background:var(--pink-soft)}
+.bstyles{display:flex;gap:8px;flex-wrap:wrap}
+.bsty{border:2px solid var(--pink-line);background:#fff;border-radius:10px;padding:7px 13px;font-weight:800;font-size:13px;color:var(--sub)}
+.bsty.sel{border-color:var(--red);color:var(--red);background:var(--pink-soft)}
+
+/* ---------- katakana keyboard ---------- */
+.kbwrap{border:2px solid var(--pink-line);border-radius:12px;background:#fff;padding:10px;margin-top:8px}
+.kbrows{display:flex;flex-direction:column;gap:4px}
+.kbrow{display:flex;gap:4px;flex-wrap:wrap}
+.kb{font-family:var(--jp);font-size:17px;font-weight:700;background:var(--wash);border:1.5px solid var(--pink-line);
+  border-radius:8px;min-width:36px;padding:5px 0;text-align:center}
+.kb:hover{border-color:var(--red);background:var(--pink-soft)}
+.kb.fn{font-family:var(--disp);font-size:12.5px;padding:5px 10px;color:var(--red);font-weight:800}
+.kbnote{font-size:12px;color:var(--sub);margin-top:6px}
+
+/* ---------- script lines ---------- */
+.scriptline{border:2px solid var(--pink-line);border-left:8px solid var(--red);border-radius:12px;background:#fff;
+  padding:11px 15px;margin:0 0 10px}
+.scriptline .ro-l{font-size:19px;font-family:var(--disp);font-weight:700}
+.scriptline .kana-l{font-size:16px;margin-top:2px}
+.scriptline .en-l{font-size:13px;color:var(--sub);margin-top:2px}
+
+/* ---------- present stage ---------- */
+.stage{background:var(--paper);border:2px solid var(--pink-line);border-radius:20px;padding:26px 22px 30px;text-align:center}
+.stage .meishi{margin:0 auto;transform:scale(1.15);transform-origin:top center;margin-bottom:36px}
+.stagestep{min-height:86px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;margin:14px 0 8px}
+.stagestep .cluetxt{font-size:21px;font-family:var(--disp);font-weight:700}
+.stagestep .biglinero{font-size:24px;font-family:var(--disp);font-weight:800}
+.stagestep .biglinekana{font-size:19px}
+.stagestep .waiting{color:var(--sub);font-size:15px}
+.stagebtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.revealname{font-size:26px;font-family:var(--disp);font-weight:800;color:var(--red)}
+.confetti{position:fixed;font-size:26px;top:-40px;z-index:99;pointer-events:none;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(340deg);opacity:.9}}
+
+/* ---------- tricky age buttons ---------- */
+.trickies{display:flex;gap:8px;flex-wrap:wrap}
+.trk{border:2px solid var(--pink-line);background:#fff;border-radius:10px;padding:7px 13px;font-weight:800;font-size:14px;font-family:var(--disp)}
+.trk.sel{border-color:var(--red);background:var(--pink-soft);color:var(--red)}
+
+/* ---------- checklist ---------- */
+.ckrow{display:flex;gap:8px;align-items:baseline;font-size:14px;margin:3px 0}
+.ckrow .okno{font-weight:800}
+.ok{color:var(--romaji)}.no{color:var(--sub)}
+
+/* ---------- print ---------- */
+#printSheet{display:none}
+@media print{
+  body{background:#fff}
+  header,nav,main,.noprint{display:none!important}
+  #printSheet{display:block;font-family:var(--body);color:#1a1a1a;padding:10mm 12mm}
+  #printSheet h2{font-family:var(--disp);color:var(--red);margin:0 0 2mm;font-size:17pt}
+  #printSheet .psec{border:1.5px solid #d99;border-radius:4mm;padding:4mm 5mm;margin-bottom:4mm;page-break-inside:avoid}
+  #printSheet .plabel{font-weight:800;color:var(--red);font-size:10pt;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.5mm}
+  #printSheet .pval{font-size:11pt;margin-bottom:2mm;white-space:pre-wrap}
+  .cutrow{display:flex;gap:8mm;align-items:flex-start}
+  .cutcard{border:1px dashed #999;padding:5mm;border-radius:2mm}
+  .cutnote{font-size:9pt;color:#777;margin-top:2mm}
+  .meishi{box-shadow:none}
+}
+footer{max-width:1180px;margin:0 auto;padding:0 20px 34px;font-size:12.5px;color:var(--sub)}
+footer .jp{font-family:var(--jp)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="mark">
+      <div class="sun">🌟</div>
+      <div><h1>Famous Meishi Studio</h1><div class="jp">YUUMEIJIN MEISHI STUDIO · STAGE 3 JAPANESE</div></div>
+    </div>
+    <div class="hspace"></div>
+    <div class="saveline" id="saveline">Your work saves on this laptop, in this browser.</div>
+    <button id="resetBtn" type="button">Start over</button>
+  </div>
+  <nav id="tabs"></nav>
+</header>
+
+<main>
+<div class="left">
+
+  <!-- ================= PANEL 1 : STAR & RESEARCH ================= -->
+  <section class="panel" id="p-star">
+    <div class="bubble"><span class="who">🦊</span>
+      You made <b>your own meishi</b> like a pro — now the gallery needs its <b class="hl">STARS!</b>
+      Pick a famous Japanese person or character — a sport star, an artist, an <b>anime hero</b> —
+      research them, and build a meishi for <b>them</b>. At the end, the class will try to <b class="hl">guess who it is</b>.
+    </div>
+
+    <div class="card-sec">
+      <h2><span class="step">STEP 1</span>Pick your star ⭐</h2>
+      <div class="stars" id="starGrid"></div>
+      <div style="margin-top:10px" class="frow">
+        <div class="field" style="flex:2"><label>…or ANY star or character you love <span class="opt">(anime, games, sport — check with your teacher first!)</span></label>
+          <input type="text" id="customStar" placeholder="Type their name in English…" maxlength="40">
+          <div class="notice" id="kataSuggest" hidden style="margin-top:8px"></div></div>
+      </div>
+    </div>
+
+    <div class="card-sec">
+      <h2><span class="step">STEP 2</span>Star detective research 🔍</h2>
+      <div class="notice" style="margin-bottom:12px">✍️ <b>Own words only!</b> Short, snappy notes — never copy whole sentences from a website.</div>
+      <div class="field"><label>Who is your star, and what are they famous for?</label>
+        <textarea id="rWho" placeholder="e.g. A baseball player who…"></textarea></div>
+      <div class="frow">
+        <div class="field" style="max-width:170px"><label>How old are they?</label>
+          <input type="number" id="rAge" min="1" max="9999" placeholder="e.g. 32"></div>
+        <div class="field" style="flex:2"><label>&nbsp;</label>
+          <label style="font-weight:600;font-size:13.5px;display:flex;gap:7px;align-items:center;margin-top:8px">
+          <input type="checkbox" id="rInvented"> No official age — I invented this one! <span class="chip">characters can be ANY age</span></label></div>
+      </div>
+      <div class="agebox" id="ageBox"><span class="hint">Type an age above and I'll turn it into Japanese for you…</span></div>
+      <div class="field" style="margin-top:12px"><label>Fun fact 1 <span class="opt">(most of the class won't know this)</span></label>
+        <input type="text" id="rFact1" maxlength="160"></div>
+      <div class="field"><label>Fun fact 2</label>
+        <input type="text" id="rFact2" maxlength="160"></div>
+      <div class="field"><label>Their motif <span class="opt">— a symbol or colour that screams "it's them!"</span></label>
+        <input type="text" id="rMotif" maxlength="80" placeholder="e.g. a baseball and Dodger blue"></div>
+      <div class="field"><label>My sources <span class="opt">(book or website name)</span></label>
+        <input type="text" id="rSources" maxlength="160"></div>
+      <div style="text-align:right"><button class="pillbtn" data-go="card" type="button">Next: design the card →</button></div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL 2 : CARD STUDIO ================= -->
+  <section class="panel" id="p-card">
+    <div class="card-sec">
+      <h2><span class="step">STEP 3</span>Design their meishi ✒️</h2>
+      <div class="field"><label>Name on the card — in katakana!</label>
+        <input type="text" id="cKata" class="kana" placeholder="Use the ⌨ keyboard below" maxlength="18" style="font-family:var(--jp);font-size:19px">
+        <div class="hint" id="kataWarn" hidden style="color:var(--gold);font-weight:700;margin-top:4px">💡 That looks like English letters — tap the ⌨ katakana keyboard so the name is in Japanese script!</div>
+        <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="pillbtn ghost small" id="kbToggle" type="button">⌨ Katakana keyboard</button>
+          <span class="hint" id="presetKataHint"></span>
+        </div>
+        <div class="kbwrap" id="kbWrap" hidden>
+          <div class="kbrows" id="kbRows"></div>
+          <div class="kbnote">Tap <b>゛</b> or <b>゜</b> to change the last letter (カ+゛=ガ, ハ+゜=パ). <b>ー</b> stretches the sound. Small ャュョッ make combo sounds.</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>Name in English <span class="opt">(small print on the card)</span></label>
+          <input type="text" id="cRomaji" maxlength="30"></div>
+        <div class="field"><label>What they do <span class="opt">(the card's job line)</span></label>
+          <input type="text" id="cTag" maxlength="40" placeholder="e.g. Baseball superstar"></div>
+      </div>
+      <div class="field"><label>Motif — the sneaky hint on the card</label>
+        <div class="emgrid" id="emGrid"></div></div>
+      <div class="frow">
+        <div class="field" style="max-width:210px"><label>…or ANY emoji <span class="opt">(Win + . opens the emoji picker)</span></label>
+          <input type="text" id="cAnyEm" maxlength="4" placeholder="🐙" style="font-size:22px;text-align:center"></div>
+        <div class="field"><label>…or your own picture <span class="opt">(a photo of your drawing works!)</span></label>
+          <input type="file" id="cImgFile" accept="image/*" hidden>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:2px">
+            <button class="pillbtn ghost small" id="cImgBtn" type="button">🖼 Upload picture</button>
+            <button class="pillbtn ghost small" id="cImgClear" type="button" hidden>✖ Remove</button>
+          </div></div>
+        <div class="field" style="max-width:190px"><label>Motif size</label><div class="bstyles" id="msRow"></div></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>Card colours</label><div class="swatches" id="swRow"></div></div>
+        <div class="field"><label>Border style</label><div class="bstyles" id="bsRow"></div></div>
+      </div>
+      <div class="field"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="cShowAge" checked> Show the age on the card</label></div>
+      <div class="notice">🖨️ You'll print this card at the end — it goes on the <b>Famous Meishi Gallery wall</b>. Check it in the preview →</div>
+      <div style="text-align:right;margin-top:10px"><button class="pillbtn" data-go="script" type="button">Next: the intro script →</button></div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL 3 : SCRIPT ================= -->
+  <section class="panel" id="p-script">
+    <div class="bubble"><span class="who">🐱</span>
+      <b>NEW pattern!</b> To introduce someone <b>else</b>, hold up their card and say
+      <span class="ro">Kore wa ___ desu.</span> Then their age: <span class="ro">___ wa ___-<span class="sai">sai</span> desu.</span>
+    </div>
+    <div class="card-sec">
+      <h2><span class="step">STEP 4</span>Your intro script 🎤</h2>
+      <div class="field"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="sSan" checked>
+        Add <b>-san</b> after the name <span class="opt">(people get -san; characters like Pikachu can skip it — and never -san on your own name!)</span></label></div>
+      <div id="scriptLines"></div>
+      <div class="notice" id="scriptGaps"></div>
+      <div class="field" style="margin-top:14px"><label>Clue 1 <span class="opt">(in English — don't give it away too fast!)</span></label>
+        <input type="text" id="sClue1" maxlength="120"></div>
+      <div class="field"><label>Clue 2</label>
+        <input type="text" id="sClue2" maxlength="120"></div>
+      <div style="text-align:right"><button class="pillbtn" data-go="present" type="button">Next: present to the class →</button></div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL 4 : PRESENT ================= -->
+  <section class="panel" id="p-present">
+    <div class="bubble"><span class="who">🐼</span>
+      Game time! Plug into the big screen or turn your laptop around. Read your clues, say the age line
+      <b>in Japanese</b>, let the class guess — <span class="ro">&ldquo;Pikachu desu ka?&rdquo;</span> — then hit
+      <b class="hl">REVEAL</b>, say the Kore wa line, and <b>bow</b>. 🙇
+    </div>
+    <div class="stage" id="stageBox">
+      <div id="stageCard"></div>
+      <div class="stagestep" id="stageStep"><span class="waiting">Press <b>Start</b> when the class is ready…</span></div>
+      <div class="stagebtns" id="stageBtns"></div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL 5 : YURU-CHARA ================= -->
+  <section class="panel" id="p-yuru">
+    <div class="bubble"><span class="who">🐻</span>
+      <b>Fast finisher?</b> Japan is <b class="hl">mascot-crazy!</b> Nearly every town, train line — even the police —
+      has a cuddly mascot called a <b>yuru-chara</b>. Kumamon has his own office… and his own meishi!
+    </div>
+    <div class="card-sec">
+      <h2><span class="step">PART 1</span>Quick research 🔍</h2>
+      <div class="frow">
+        <div class="field"><label>A real yuru-chara I found</label><input type="text" id="yReal" maxlength="60"></div>
+        <div class="field"><label>Where it's from</label><input type="text" id="yFrom" maxlength="60"></div>
+      </div>
+      <div class="field"><label>What does a yuru-chara do for its town? <span class="opt">(own words!)</span></label>
+        <textarea id="yDo"></textarea></div>
+    </div>
+    <div class="card-sec">
+      <h2><span class="step">PART 2</span>Create a mascot for our school or suburb 🏫</h2>
+      <div class="frow">
+        <div class="field"><label>Mascot name — katakana!</label>
+          <input type="text" id="yKata" maxlength="14" style="font-family:var(--jp);font-size:19px">
+          <button class="pillbtn ghost small" id="kbToggle2" type="button" style="margin-top:6px">⌨ Katakana keyboard</button>
+          <div class="kbwrap" id="kbWrap2" hidden><div class="kbrows" id="kbRows2"></div></div>
+        </div>
+        <div class="field"><label>It is a… <span class="opt">(animal? food? robot?)</span></label><input type="text" id="yIs" maxlength="40"></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>It loves</label><input type="text" id="yLoves" maxlength="60"></div>
+        <div class="field"><label>Catchphrase</label><input type="text" id="yPhrase" maxlength="60"></div>
+      </div>
+      <div class="field"><label>🎂 Tricky-age challenge — pick a tricky age!</label>
+        <div class="trickies" id="yTrickies"></div>
+        <div class="agebox" id="yAgeBox" style="margin-top:8px"><span class="hint">Pick an age above…</span></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label>Mascot emoji <span class="opt">(stands in for your drawing)</span></label><div class="emgrid" id="yEmGrid"></div>
+          <input type="text" id="yAnyEm" maxlength="4" placeholder="…or ANY emoji (Win + .) 🐙" style="margin-top:8px;max-width:230px;font-size:17px"></div>
+      </div>
+      <div class="field"><label>Mascot card colours</label><div class="swatches" id="ySwRow"></div></div>
+      <div class="notice">🎨 Draw the <b>real</b> mascot BIG on paper — this digital card is its meishi for the wall!</div>
+    </div>
+  </section>
+
+  <!-- ================= PANEL 6 : PRINT ================= -->
+  <section class="panel" id="p-print">
+    <div class="card-sec">
+      <h2><span class="step">FINISH</span>Print &amp; hand in 🖨️</h2>
+      <div id="checkList"></div>
+      <p class="hint" style="margin:12px 0 14px">Printing makes one tidy A4 page: your research notes, your script and clues,
+        and <b>two copies of the meishi</b> to cut out — one for the gallery wall, one to keep.
+        (Choose &ldquo;Save as PDF&rdquo; to hand it in digitally.)</p>
+      <button class="pillbtn" id="printBtn" type="button">🖨️ Print my page</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- ================= RIGHT RAIL : LIVE CARD ================= -->
+<aside class="rail">
+  <div class="railcap"><span>Live card preview</span>
+    <button class="pillbtn ghost small" id="peekBtn" type="button">🙈 Hide name</button></div>
+  <div id="cardHolder"></div>
+  <div class="railcap" id="yuruCap" hidden><span>Mascot card</span></div>
+  <div id="yCardHolder" hidden></div>
+  <div class="notice" id="railHint"></div>
+</aside>
+</main>
+
+<footer>
+  Stage 3 Japanese · The Famous Meishi Gallery — works with the paper pack.
+  <span class="jp">Ganbatte!</span> 🦊
+</footer>
+
+<div id="printSheet"></div>
+
+<script>
+"use strict";
+/* ================= Famous Meishi Studio ================= */
+
+/* ---------- data ---------- */
+const PRESETS = [
+  {id:"ohtani", em:"⚾", en:"Ohtani Shohei", kata:"オオタニ・ショウヘイ", who:"baseball", tag:"Baseball superstar", person:true},
+  {id:"osaka",  em:"🎾", en:"Osaka Naomi",   kata:"オオサカ・ナオミ",     who:"tennis",   tag:"Tennis champion", person:true},
+  {id:"miyazaki",em:"🎬",en:"Miyazaki Hayao",kata:"ミヤザキ・ハヤオ",     who:"film director", tag:"Film director", person:true},
+  {id:"kusama", em:"🎨", en:"Kusama Yayoi",  kata:"クサマ・ヤヨイ",       who:"artist",   tag:"Dot &amp; pumpkin artist", person:true},
+  {id:"pikachu",em:"⚡", en:"Pikachu",       kata:"ピカチュウ",           who:"Pokémon",  tag:"Electric-mouse Pokémon", person:false},
+  {id:"totoro", em:"🌳", en:"Totoro",        kata:"トトロ",               who:"forest spirit", tag:"Forest spirit", person:false},
+  {id:"kitty",  em:"🎀", en:"Hello Kitty",   kata:"ハローキティ",         who:"Sanrio star", tag:"Sanrio superstar", person:false},
+  {id:"doraemon",em:"🤖",en:"Doraemon",      kata:"ドラえもん",           who:"robot cat", tag:"Robot cat from the future", person:false},
+  {id:"mario",  em:"🍄", en:"Mario",         kata:"マリオ",               who:"Nintendo hero", tag:"Jumping plumber", person:false},
+  {id:"kumamon",em:"🐻", en:"Kumamon",       kata:"くまモン",             who:"mascot bear", tag:"Kumamoto's mascot bear", person:false},
+  {id:"naruto", em:"🍥", en:"Naruto",        kata:"ナルト",               who:"ninja hero",  tag:"Ninja of the Hidden Leaf", person:false},
+  {id:"tanjiro",em:"⚔️", en:"Tanjiro",       kata:"タンジロウ",           who:"Demon Slayer", tag:"Kind demon slayer", person:false},
+  {id:"nezuko", em:"🎍", en:"Nezuko",        kata:"ネズコ",               who:"Demon Slayer", tag:"Demon little sister", person:false},
+  {id:"goku",   em:"🐉", en:"Son Goku",      kata:"ソン・ゴクウ",         who:"Dragon Ball", tag:"Super Saiyan hero", person:false},
+  {id:"luffy",  em:"🏴‍☠️", en:"Luffy",        kata:"ルフィ",               who:"One Piece",   tag:"Rubber pirate captain", person:false},
+  {id:"sailormoon",em:"🌙",en:"Sailor Moon", kata:"セーラームーン",       who:"magical girl", tag:"Guardian of love &amp; justice", person:false}
+];
+const PALS = [
+  {id:"shiro", name:"Shiro",  bg:"#ffffff", ink:"#26232a", ac:"#bc002d"},
+  {id:"aka",   name:"Aka",    bg:"#bc002d", ink:"#ffffff", ac:"#ffd9df"},
+  {id:"kon",   name:"Kon",    bg:"#1d2a52", ink:"#ffffff", ac:"#ffd43b"},
+  {id:"sakura",name:"Sakura", bg:"#ffe3ea", ink:"#7a1230", ac:"#d4356b"},
+  {id:"matcha",name:"Matcha", bg:"#e8f3dc", ink:"#2a4a1e", ac:"#2f9e44"},
+  {id:"sora",  name:"Sora",   bg:"#dceeff", ink:"#143a66", ac:"#1a6fd4"},
+  {id:"kuro",  name:"Kuro",   bg:"#232326", ink:"#ffffff", ac:"#ffb7c5"},
+  {id:"kin",   name:"Kin",    bg:"#fff6dc", ink:"#4a3a08", ac:"#c8a028"}
+];
+const BSTYLES = [{id:"b-line",name:"Line"},{id:"b-double",name:"Double"},{id:"b-corner",name:"Corners"}];
+const EMOJIS = ["⚾","🎾","⚽","🏀","🎬","🎨","🎤","🎮","📚","⚡","🌸","🌳","🍄","🎀","🤖","🐻","🐱","🐼","🦊","🐰","🐉","👘","🗻","⛩️","🚄","🥋","🏯","🎌","🌊","⭐","💮","🍣","🍜","🍙","🍡","🥇"];
+const TABS = [
+  {id:"star", n:1, em:"⭐", label:"Star &amp; Research", hint:"Pick a star and dig up the facts — your card builds itself as you go →"},
+  {id:"card", n:2, em:"✒️", label:"Card Studio",        hint:"Everything you change appears on the card instantly. Make the motif a sneaky hint!"},
+  {id:"script",n:3, em:"🎤", label:"Script",             hint:"Practise saying both lines out loud — YOU are the voice today!"},
+  {id:"present",n:4,em:"🎭", label:"Present!",           hint:"Name hidden, clues ready — let the class guess, then REVEAL and bow. 🙇"},
+  {id:"yuru", n:5, em:"🌸", label:"Yuru-chara",          hint:"Fast-finisher zone: invent a mascot with a TRICKY age (issai! hassai! hatachi!)."},
+  {id:"print",n:6, em:"🖨️", label:"Print",              hint:"One A4 page: notes, script, and two cut-out cards at real meishi size."}
+];
+
+/* ---------- state ---------- */
+const DEF = {
+  tab:"star",
+  star:{preset:"", custom:"", en:"", person:true},
+  r:{who:"", age:"", invented:false, f1:"", f2:"", motif:"", src:""},
+  card:{kata:"", romaji:"", tag:"", motif:"", img:"", msize:"m", pal:"shiro", bsty:"b-line", showAge:true},
+  s:{san:true, c1:"", c2:""},
+  y:{real:"", from:"", doo:"", kata:"", is:"", loves:"", phrase:"", age:"", motif:"", pal:"aka"}
+};
+let S = load();
+function load(){
+  try{ const raw = localStorage.getItem("famousMeishi_v1");
+    if(raw){ const p = JSON.parse(raw); return deepMerge(structuredClone(DEF), p); } }catch(e){}
+  return structuredClone(DEF);
+}
+function deepMerge(base, extra){
+  for(const k in extra){ if(extra[k] && typeof extra[k]==="object" && !Array.isArray(extra[k]) && base[k]) deepMerge(base[k], extra[k]); else base[k]=extra[k]; }
+  return base;
+}
+let saveT=null;
+function save(){ clearTimeout(saveT); saveT=setTimeout(()=>{ try{ localStorage.setItem("famousMeishi_v1", JSON.stringify(S)); }catch(e){} },250); }
+const $=(id)=>document.getElementById(id);
+const esc=(t)=>String(t||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- English → katakana helper ---------- */
+const K3={kya:"キャ",kyu:"キュ",kyo:"キョ",gya:"ギャ",gyu:"ギュ",gyo:"ギョ",sha:"シャ",shu:"シュ",sho:"ショ",she:"シェ",shi:"シ",cha:"チャ",chu:"チュ",cho:"チョ",che:"チェ",chi:"チ",tsu:"ツ",nya:"ニャ",nyu:"ニュ",nyo:"ニョ",hya:"ヒャ",hyu:"ヒュ",hyo:"ヒョ",bya:"ビャ",byu:"ビュ",byo:"ビョ",pya:"ピャ",pyu:"ピュ",pyo:"ピョ",mya:"ミャ",myu:"ミュ",myo:"ミョ",rya:"リャ",ryu:"リュ",ryo:"リョ",jya:"ジャ",jyu:"ジュ",jyo:"ジョ"};
+const K2={ka:"カ",ki:"キ",ku:"ク",ke:"ケ",ko:"コ",ga:"ガ",gi:"ギ",gu:"グ",ge:"ゲ",go:"ゴ",sa:"サ",si:"シ",su:"ス",se:"セ",so:"ソ",za:"ザ",zi:"ジ",zu:"ズ",ze:"ゼ",zo:"ゾ",ta:"タ",ti:"チ",tu:"ツ",te:"テ",to:"ト",da:"ダ",di:"ディ",du:"ドゥ",de:"デ",do:"ド",na:"ナ",ni:"ニ",nu:"ヌ",ne:"ネ",no:"ノ",ha:"ハ",hi:"ヒ",hu:"フ",he:"ヘ",ho:"ホ",ba:"バ",bi:"ビ",bu:"ブ",be:"ベ",bo:"ボ",pa:"パ",pi:"ピ",pu:"プ",pe:"ペ",po:"ポ",ma:"マ",mi:"ミ",mu:"ム",me:"メ",mo:"モ",ya:"ヤ",yu:"ユ",yo:"ヨ",ra:"ラ",ri:"リ",ru:"ル",re:"レ",ro:"ロ",la:"ラ",li:"リ",lu:"ル",le:"レ",lo:"ロ",wa:"ワ",wi:"ウィ",wu:"ウ",we:"ウェ",wo:"ウォ",fa:"ファ",fi:"フィ",fu:"フ",fe:"フェ",fo:"フォ",va:"バ",vi:"ビ",vu:"ブ",ve:"ベ",vo:"ボ",ja:"ジャ",ji:"ジ",ju:"ジュ",je:"ジェ",jo:"ジョ",ca:"カ",ci:"シ",cu:"ク",ce:"セ",co:"コ",qu:"ク"};
+const K1={a:"ア",i:"イ",u:"ウ",e:"エ",o:"オ",n:"ン",k:"ク",g:"グ",s:"ス",z:"ズ",t:"ト",d:"ド",b:"ブ",p:"プ",m:"ム",r:"ル",l:"ル",f:"フ",h:"フ",j:"ジ",v:"ブ",w:"ウ",y:"イ",c:"ク",q:"ク",x:"クス"};
+function toKata(raw){
+  let s=String(raw).toLowerCase().replace(/[^a-z\s\-]/g,"");
+  if(!s.trim()) return "";
+  const isV=(c)=>"aeiou".includes(c);
+  let out="", i=0, lastV="";
+  while(i<s.length){
+    const c=s[i];
+    if(c===" "||c==="-"){ if(!out.endsWith("・")&&out) out+="・"; lastV=""; i++; continue; }
+    if(!isV(c)&&c!=="n"&&s[i+1]===c){ out+="ッ"; i++; continue; }
+    if(c==="n"&&(i+1>=s.length||(!isV(s[i+1])&&s[i+1]!=="y"))){ out+="ン"; lastV=""; i++; continue; }
+    if(isV(c)&&c===lastV){ out+="ー"; i++; continue; }
+    const three=s.substr(i,3);
+    let two=s.substr(i,2);
+    if(two.length===2&&!isV(two[0])&&two[1]==="y"&&(i+2>=s.length||!isV(s[i+2]))) two=two[0]+"i";
+    if(K3[three]){ out+=K3[three]; lastV=three[three.length-1]; i+=3; continue; }
+    if(K2[two]){ out+=K2[two]; lastV=two[1]; i+=2; continue; }
+    if(K1[c]){ out+=K1[c]; lastV=isV(c)?c:""; i++; continue; }
+    i++;
+  }
+  return out;
+}
+
+/* ---------- age → Japanese ---------- */
+const RO_D=["","ichi","ni","san","yon","go","roku","nana","hachi","kyuu"];
+const KA_D=["","いち","に","さん","よん","ご","ろく","なな","はち","きゅう"];
+function ageJa(nRaw){
+  const n = Math.floor(Number(nRaw));
+  if(!n || n<1 || n>9999) return null;
+  if(n===20) return {ro:"hatachi", kana:"はたち", note:"⭐ Super special word — only for exactly 20! (No sai at all.)"};
+  let ro=[], ka=[];
+  const th=Math.floor(n/1000)%10, h=Math.floor(n/100)%10, t=Math.floor(n/10)%10, u=n%10;
+  if(th){ ro.push(th===1?"sen":th===3?"san-zen":th===8?"has-sen":RO_D[th]+"-sen");
+          ka.push(th===1?"せん":th===3?"さんぜん":th===8?"はっせん":KA_D[th]+"せん"); }
+  if(h){ ro.push(h===1?"hyaku":h===3?"san-byaku":h===6?"rop-pyaku":h===8?"hap-pyaku":RO_D[h]+"-hyaku");
+         ka.push(h===1?"ひゃく":h===3?"さんびゃく":h===6?"ろっぴゃく":h===8?"はっぴゃく":KA_D[h]+"ひゃく"); }
+  if(t){ ro.push(t===1?"juu":RO_D[t]+"-juu"); ka.push(t===1?"じゅう":KA_D[t]+"じゅう"); }
+  let note="";
+  if(u===1){ ro.push("issai"); ka.push("いっさい"); note="🎂 Tricky form! Ends in 1 → -issai (not ichi-sai)."; }
+  else if(u===8){ ro.push("hassai"); ka.push("はっさい"); note="🎂 Tricky form! Ends in 8 → -hassai (little pause!)."; }
+  else if(u===0){
+    if(t){ ro[ro.length-1]=ro[ro.length-1].replace(/juu$/,"jussai"); ka[ka.length-1]=ka[ka.length-1].replace(/じゅう$/,"じゅっさい"); note="🎂 Tricky form! Ends in 0 → -jussai (not juu-sai)."; }
+    else { ro.push("sai"); ka.push("さい"); }
+  }
+  else { ro.push(RO_D[u]+"-sai"); ka.push(KA_D[u]+"さい"); }
+  return {ro:ro.join("-"), kana:ka.join(""), note};
+}
+function roHTML(ro){
+  if(!ro) return "";
+  if(ro==="hatachi") return '<span class="ro">hatachi</span>';
+  let h = esc(ro)
+    .replace(/jussai/g,'<b>jus</b>@SAI@').replace(/issai/g,"is@SAI@").replace(/hassai/g,"has@SAI@")
+    .replace(/sai/g,"@SAI@").replace(/juu/g,"<b>juu</b>")
+    .replace(/@SAI@/g,'<span class="sai">sai</span>');
+  return '<span class="ro">'+h+"</span>";
+}
+
+/* ---------- card renderer ---------- */
+function starCfg(){
+  const pal = PALS.find(p=>p.id===S.card.pal)||PALS[0];
+  const age = ageJa(S.r.age);
+  return { kata:S.card.kata, romaji:S.card.romaji||S.star.en, tag:S.card.tag, motif:S.card.motif,
+           img:S.card.img, msize:S.card.msize, pal, bsty:S.card.bsty, showAge:S.card.showAge, ageN:S.r.age, age };
+}
+function yuruCfg(){
+  const pal = PALS.find(p=>p.id===S.y.pal)||PALS[1];
+  const age = ageJa(S.y.age);
+  return { kata:S.y.kata, romaji:S.y.is, tag:S.y.phrase||"Our mascot", motif:S.y.motif,
+           pal, bsty:"b-corner", showAge:!!S.y.age, ageN:S.y.age, age };
+}
+function cardHTML(c, opts){
+  opts=opts||{};
+  const hide=!!opts.hideName, ex=!!opts.example;
+  const kata = c.kata || "";
+  const kLen=[...kata].length;
+  const kSize = kLen<=5?38 : kLen<=7?32 : kLen<=10?26 : kLen<=13?22 : 18;
+  const border = c.bsty==="b-corner" ? "" : "border-color:"+c.pal.ac+";";
+  const ageTxt = (c.showAge && c.ageN) ? (Number(c.ageN)===20 ? "hatachi (20)" : esc(c.ageN)+"-sai") : "";
+  return '<div class="meishi '+c.bsty+(hide?" hidden-name":"")+'" style="background:'+c.pal.bg+";color:"+c.pal.ink+";"+border+'">'
+    + (c.bsty==="b-corner" ? '<span class="cnr tl" style="border-color:'+c.pal.ac+'"></span><span class="cnr br" style="border-color:'+c.pal.ac+'"></span>' : "")
+    + '<div class="tag" style="color:'+c.pal.ac+'">'+(ex?"EXAMPLE CARD":esc(c.tag)||"&nbsp;")+"</div>"
+    + '<div class="mid"><div class="kn" style="font-size:'+kSize+'px">'
+    + (hide ? '<span class="qmark">？？？</span>' : (esc(kata)||'<span style="opacity:.35;font-size:22px">name?</span>'))
+    + "</div>"
+    + '<div class="rn">'+(hide ? "(himitsu — secret!)" : esc(c.romaji)||"&nbsp;")+"</div></div>"
+    + '<div class="agel"><span class="kana">'+(ageTxt||"&nbsp;")+"</span></div>"
+    + (c.img ? '<img class="motifimg ms-'+(c.msize||"m")+'" src="'+c.img+'" alt="motif">'
+             : (c.motif ? '<div class="motif ms-'+(c.msize||"m")+'">'+c.motif+"</div>" : ""))
+    + "</div>";
+}
+
+/* ---------- tabs ---------- */
+function tabDone(id){
+  if(id==="star") return !!(S.star.en && S.r.who.trim() && S.r.age);
+  if(id==="card") return !!(S.card.kata && S.card.motif);
+  if(id==="script") return !!(S.s.c1.trim() && S.s.c2.trim());
+  if(id==="yuru") return !!(S.y.kata && S.y.age);
+  return false;
+}
+function renderTabs(){
+  $("tabs").innerHTML = TABS.map(t=>'<button type="button" class="tab'+(S.tab===t.id?" on":"")+(tabDone(t.id)?" done":"")+'" data-tab="'+t.id+'"><span class="n">'+(tabDone(t.id)?"✓":t.n)+"</span>"+t.em+" "+t.label+"</button>").join("");
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on", p.id==="p-"+S.tab));
+  const t=TABS.find(x=>x.id===S.tab);
+  $("railHint").innerHTML = "💡 " + t.hint;
+}
+function goTab(id){ S.tab=id; save(); renderTabs(); if(id==="present") renderStage(true); if(id==="print") renderChecklist(); window.scrollTo({top:0,behavior:"smooth"}); }
+document.addEventListener("click",(e)=>{
+  const tb=e.target.closest("[data-tab]"); if(tb){ goTab(tb.dataset.tab); return; }
+  const go=e.target.closest("[data-go]"); if(go){ goTab(go.dataset.go); return; }
+});
+
+/* ---------- star grid ---------- */
+function renderStars(){
+  $("starGrid").innerHTML = PRESETS.map(p=>'<button type="button" class="starbtn'+(S.star.preset===p.id?" sel":"")+'" data-star="'+p.id+'"><span class="em">'+p.em+'</span><span class="nm">'+p.en+'</span><span class="wh">'+p.who+"</span></button>").join("");
+}
+document.addEventListener("click",(e)=>{
+  const b=e.target.closest("[data-star]"); if(!b) return;
+  const p=PRESETS.find(x=>x.id===b.dataset.star);
+  S.star.preset=p.id; S.star.custom=""; $("customStar").value="";
+  S.star.en=p.en; S.star.person=p.person;
+  S.card.kata=p.kata; S.card.romaji=p.en;
+  if(!S.card.tag) S.card.tag=p.tag.replace(/&amp;/g,"&");
+  if(!S.card.motif) S.card.motif=p.em;
+  S.s.san=p.person;
+  $("cKata").value=S.card.kata; $("cRomaji").value=S.card.romaji; $("cTag").value=S.card.tag; $("sSan").checked=S.s.san;
+  $("presetKataHint").innerHTML='Katakana loaded for you: <span class="kana"><b>'+esc(p.kata)+"</b></span> ✓";
+  save(); renderStars(); renderCard(); renderScript(); renderTabs();
+});
+
+/* ---------- field bindings ---------- */
+function bind(id, obj, key, after){
+  const el=$(id);
+  el.addEventListener("input",()=>{
+    obj[key] = (el.type==="checkbox") ? el.checked : el.value;
+    save(); if(after) after();
+  });
+}
+function setFields(){
+  $("customStar").value=S.star.custom; $("rWho").value=S.r.who; $("rAge").value=S.r.age;
+  $("rInvented").checked=S.r.invented; $("rFact1").value=S.r.f1; $("rFact2").value=S.r.f2;
+  $("rMotif").value=S.r.motif; $("rSources").value=S.r.src;
+  $("cKata").value=S.card.kata; $("cRomaji").value=S.card.romaji; $("cTag").value=S.card.tag; $("cShowAge").checked=S.card.showAge;
+  $("sSan").checked=S.s.san; $("sClue1").value=S.s.c1; $("sClue2").value=S.s.c2;
+  $("yReal").value=S.y.real; $("yFrom").value=S.y.from; $("yDo").value=S.y.doo; $("yKata").value=S.y.kata;
+  $("yIs").value=S.y.is; $("yLoves").value=S.y.loves; $("yPhrase").value=S.y.phrase;
+  $("cAnyEm").value = EMOJIS.includes(S.card.motif)? "" : (S.card.motif||"");
+  $("yAnyEm").value = EMOJIS.includes(S.y.motif)? "" : (S.y.motif||"");
+  syncImgBtns(); kataWarn();
+}
+bind("customStar",S.star,"custom",()=>{ if(S.star.custom.trim()){ S.star.preset=""; S.star.en=S.star.custom.trim(); renderStars(); renderScript(); } renderKataSuggest(); renderCard(); renderTabs(); });
+function renderKataSuggest(){
+  const el=$("kataSuggest"), v=S.star.custom.trim();
+  const k=v? toKata(v) : "";
+  if(!k){ el.hidden=true; el.innerHTML=""; return; }
+  el.hidden=false;
+  el.innerHTML='✨ In katakana it could be: <b class="kana" style="font-size:19px;color:var(--ink)">'+esc(k)+"</b> "
+    + '<button type="button" class="pillbtn small" id="useKata" style="margin-left:8px">Use it on my card →</button>'
+    + '<div class="hint" style="margin-top:4px">My best guess — check with your teacher, and fix any letter with the ⌨ in Card Studio.</div>';
+  $("useKata").addEventListener("click",()=>{
+    S.card.kata=k; S.card.romaji=S.star.en;
+    $("cKata").value=k; $("cRomaji").value=S.star.en;
+    save(); kataWarn(); renderCard(); renderScript(); renderTabs(); goTab("card");
+  });
+}
+bind("rWho",S.r,"who",()=>renderTabs());
+bind("rAge",S.r,"age",()=>{ renderAgeBox(); renderCard(); renderScript(); renderTabs(); });
+bind("rInvented",S.r,"invented");
+bind("rFact1",S.r,"f1"); bind("rFact2",S.r,"f2"); bind("rMotif",S.r,"motif"); bind("rSources",S.r,"src");
+bind("cKata",S.card,"kata",()=>{ kataWarn(); renderCard(); renderScript(); renderTabs(); });
+bind("cRomaji",S.card,"romaji",()=>renderCard());
+bind("cTag",S.card,"tag",()=>renderCard());
+bind("cShowAge",S.card,"showAge",()=>renderCard());
+bind("sSan",S.s,"san",()=>renderScript());
+bind("sClue1",S.s,"c1",()=>renderTabs()); bind("sClue2",S.s,"c2",()=>renderTabs());
+bind("yReal",S.y,"real"); bind("yFrom",S.y,"from"); bind("yDo",S.y,"doo");
+bind("yKata",S.y,"kata",()=>{ renderYCard(); renderTabs(); });
+bind("yIs",S.y,"is",()=>renderYCard()); bind("yLoves",S.y,"loves");
+bind("yPhrase",S.y,"phrase",()=>renderYCard());
+
+/* ---------- age boxes ---------- */
+function ageBoxHTML(n, forWho){
+  const a=ageJa(n);
+  if(!a) return '<span class="hint">Type an age (1–9999) and I’ll turn it into Japanese…</span>';
+  return '<div class="big">'+esc(String(n))+" → "+roHTML(a.ro)+"</div>"
+    + (a.note?'<div class="note">'+a.note+"</div>":"");
+}
+function renderAgeBox(){ $("ageBox").innerHTML = ageBoxHTML(S.r.age); }
+function renderYAgeBox(){ $("yAgeBox").innerHTML = S.y.age? ageBoxHTML(S.y.age) : '<span class="hint">Pick a tricky age above…</span>'; }
+
+/* ---------- card studio pickers ---------- */
+function renderPickers(){
+  $("emGrid").innerHTML = EMOJIS.map(m=>'<button type="button" class="emg'+(S.card.motif===m?" sel":"")+'" data-em="'+m+'">'+m+"</button>").join("");
+  $("yEmGrid").innerHTML = EMOJIS.map(m=>'<button type="button" class="emg'+(S.y.motif===m?" sel":"")+'" data-yem="'+m+'">'+m+"</button>").join("");
+  $("swRow").innerHTML = PALS.map(p=>'<button type="button" class="sw'+(S.card.pal===p.id?" sel":"")+'" data-pal="'+p.id+'" title="'+p.name+'" style="background:linear-gradient(135deg,'+p.bg+" 60%,"+p.ac+' 60%)"></button>').join("");
+  $("ySwRow").innerHTML = PALS.map(p=>'<button type="button" class="sw'+(S.y.pal===p.id?" sel":"")+'" data-ypal="'+p.id+'" title="'+p.name+'" style="background:linear-gradient(135deg,'+p.bg+" 60%,"+p.ac+' 60%)"></button>').join("");
+  $("bsRow").innerHTML = BSTYLES.map(b=>'<button type="button" class="bsty'+(S.card.bsty===b.id?" sel":"")+'" data-bsty="'+b.id+'">'+b.name+"</button>").join("");
+  $("msRow").innerHTML = [["s","Small"],["m","Medium"],["l","Large"]].map(([id,nm])=>'<button type="button" class="bsty'+(S.card.msize===id?" sel":"")+'" data-ms="'+id+'">'+nm+"</button>").join("");
+}
+document.addEventListener("click",(e)=>{
+  const em=e.target.closest("[data-em]"); if(em){ S.card.motif=em.dataset.em; $("cAnyEm").value=""; save(); renderPickers(); renderCard(); renderTabs(); return; }
+  const ym=e.target.closest("[data-yem]"); if(ym){ S.y.motif=ym.dataset.yem; $("yAnyEm").value=""; save(); renderPickers(); renderYCard(); return; }
+  const pl=e.target.closest("[data-pal]"); if(pl){ S.card.pal=pl.dataset.pal; save(); renderPickers(); renderCard(); return; }
+  const yp=e.target.closest("[data-ypal]"); if(yp){ S.y.pal=yp.dataset.ypal; save(); renderPickers(); renderYCard(); return; }
+  const bs=e.target.closest("[data-bsty]"); if(bs){ S.card.bsty=bs.dataset.bsty; save(); renderPickers(); renderCard(); return; }
+  const ms=e.target.closest("[data-ms]"); if(ms){ S.card.msize=ms.dataset.ms; save(); renderPickers(); renderCard(); return; }
+});
+
+/* ---------- any-emoji + picture motif ---------- */
+$("cAnyEm").addEventListener("input",()=>{
+  const v=$("cAnyEm").value.trim();
+  if(v){ S.card.motif=v; save(); renderPickers(); renderCard(); renderTabs(); }
+});
+$("yAnyEm").addEventListener("input",()=>{
+  const v=$("yAnyEm").value.trim();
+  if(v){ S.y.motif=v; save(); renderPickers(); renderYCard(); }
+});
+function syncImgBtns(){
+  $("cImgClear").hidden=!S.card.img;
+  $("cImgBtn").textContent = S.card.img? "🖼 Change picture":"🖼 Upload picture";
+}
+$("cImgBtn").addEventListener("click",()=>$("cImgFile").click());
+$("cImgFile").addEventListener("change",(e)=>{
+  const f=e.target.files && e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const mx=240, sc=Math.min(1, mx/Math.max(img.width,img.height));
+      const cv=document.createElement("canvas");
+      cv.width=Math.max(1,Math.round(img.width*sc)); cv.height=Math.max(1,Math.round(img.height*sc));
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+      let url=cv.toDataURL("image/png");
+      if(url.length>250000) url=cv.toDataURL("image/jpeg",0.85);
+      S.card.img=url; save(); syncImgBtns(); renderCard();
+    };
+    img.src=rd.result;
+  };
+  rd.readAsDataURL(f); e.target.value="";
+});
+$("cImgClear").addEventListener("click",()=>{ S.card.img=""; save(); syncImgBtns(); renderCard(); });
+function kataWarn(){ $("kataWarn").hidden = !/[A-Za-z]/.test(S.card.kata); }
+
+/* ---------- katakana keyboard ---------- */
+const KB_ROWS = ["アイウエオ","カキクケコ","サシスセソ","タチツテト","ナニヌネノ","ハヒフヘホ","マミムメモ","ヤユヨ・ー","ラリルレロ","ワヲンッャュョ"];
+const DAKU={"ウ":"ヴ","カ":"ガ","キ":"ギ","ク":"グ","ケ":"ゲ","コ":"ゴ","サ":"ザ","シ":"ジ","ス":"ズ","セ":"ゼ","ソ":"ゾ","タ":"ダ","チ":"ヂ","ツ":"ヅ","テ":"デ","ト":"ド","ハ":"バ","ヒ":"ビ","フ":"ブ","ヘ":"ベ","ホ":"ボ"};
+const HANDAKU={"ハ":"パ","ヒ":"ピ","フ":"プ","ヘ":"ペ","ホ":"ポ"};
+function buildKB(rowsEl, inputEl, obj, key, after){
+  rowsEl.innerHTML = KB_ROWS.map(r=>'<div class="kbrow">'+[...r].map(ch=>'<button type="button" class="kb" data-k="'+ch+'">'+ch+"</button>").join("")+"</div>").join("")
+    + '<div class="kbrow"><button type="button" class="kb" data-k="゛">゛</button><button type="button" class="kb" data-k="゜">゜</button>'
+    + '<button type="button" class="kb fn" data-k="BKSP">⌫ delete</button><button type="button" class="kb fn" data-k="CLR">clear</button></div>';
+  rowsEl.addEventListener("click",(e)=>{
+    const b=e.target.closest("[data-k]"); if(!b) return;
+    const k=b.dataset.k; let v=inputEl.value;
+    if(k==="BKSP") v=[...v].slice(0,-1).join("");
+    else if(k==="CLR") v="";
+    else if(k==="゛"||k==="゜"){ const arr=[...v], last=arr[arr.length-1], map=(k==="゛")?DAKU:HANDAKU;
+      if(last && map[last]){ arr[arr.length-1]=map[last]; v=arr.join(""); } }
+    else v+=k;
+    inputEl.value=v; obj[key]=v; save(); if(after) after();
+  });
+}
+buildKB($("kbRows"), $("cKata"), S.card, "kata", ()=>{ kataWarn(); renderCard(); renderScript(); renderTabs(); });
+buildKB($("kbRows2"), $("yKata"), S.y, "kata", ()=>{ renderYCard(); renderTabs(); });
+$("kbToggle").addEventListener("click",()=>{ $("kbWrap").hidden=!$("kbWrap").hidden; });
+$("kbToggle2").addEventListener("click",()=>{ $("kbWrap2").hidden=!$("kbWrap2").hidden; });
+
+/* ---------- rail cards ---------- */
+let peek=false;
+$("peekBtn").addEventListener("click",()=>{ peek=!peek; $("peekBtn").textContent = peek? "👀 Show name" : "🙈 Hide name"; renderCard(); });
+function renderCard(){
+  const fresh = !S.star.en && !S.card.kata && !S.r.who;
+  const cfg = fresh
+    ? { kata:"オオタニ・ショウヘイ", romaji:"Ohtani Shohei", tag:"Baseball superstar", motif:"⚾", pal:PALS[0], bsty:"b-line", showAge:true, ageN:32, age:ageJa(32) }
+    : starCfg();
+  $("cardHolder").innerHTML = cardHTML(cfg,{hideName:peek, example:fresh});
+}
+function renderYCard(){
+  const has = S.y.kata || S.y.motif;
+  $("yuruCap").hidden = !has; $("yCardHolder").hidden = !has;
+  if(has) $("yCardHolder").innerHTML = cardHTML(yuruCfg());
+}
+
+/* ---------- tricky ages ---------- */
+const TRICKIES=[1,8,10,20,99];
+function renderTrickies(){
+  $("yTrickies").innerHTML = TRICKIES.map(n=>'<button type="button" class="trk'+(String(S.y.age)===String(n)?" sel":"")+'" data-trk="'+n+'">'+n+"</button>").join("")
+    + '<input type="number" id="yCustomAge" min="1" max="9999" placeholder="any age!" style="width:110px;border:2px solid var(--pink-line);border-radius:10px;padding:7px 10px;font-size:14px" value="'+(TRICKIES.includes(Number(S.y.age))?"":esc(S.y.age))+'">';
+  const ci=$("yCustomAge");
+  ci.addEventListener("input",()=>{ S.y.age=ci.value; save(); renderTrickies(); renderYAgeBox(); renderYCard(); renderTabs(); });
+}
+document.addEventListener("click",(e)=>{
+  const t=e.target.closest("[data-trk]"); if(!t) return;
+  S.y.age=t.dataset.trk; save(); renderTrickies(); renderYAgeBox(); renderYCard(); renderTabs();
+});
+
+/* ---------- script ---------- */
+function scriptData(){
+  const name=S.star.en||"___";
+  const san = S.s.san? "-san":"";
+  const a=ageJa(S.r.age);
+  return {
+    l1:{ ro:"Kore wa "+esc(name)+san+" desu.", en:"This is "+name+"." },
+    l2:{ ro:esc(name)+san+" wa "+(a?a.ro:"___-sai")+" desu.", roH:esc(name)+san+" wa "+(a?roHTML(a.ro):'___-<span class="sai">sai</span>')+" desu.",
+         en:name+" is "+(S.r.age||"__")+"." }
+  };
+}
+function renderScript(){
+  const d=scriptData();
+  $("scriptLines").innerHTML =
+    '<div class="scriptline"><div class="ro-l"><span class="ro">'+d.l1.ro+"</span></div>"
+      + '<div class="en-l">= '+esc(d.l1.en)+"</div></div>"
+    + '<div class="scriptline"><div class="ro-l"><span class="ro">'+d.l2.roH+"</span></div>"
+      + '<div class="en-l">= '+esc(d.l2.en)+"</div></div>";
+  const gaps=[];
+  if(!S.star.en) gaps.push("pick your star (Step 1)");
+  if(!S.card.kata) gaps.push("type the katakana name (Card Studio)");
+  if(!ageJa(S.r.age)) gaps.push("find their age (Step 2)");
+  $("scriptGaps").innerHTML = gaps.length? "🧩 To finish your script: "+gaps.join(" · ")
+    : "✅ Script complete! Practise it out loud three times, then head to <b>Present!</b>";
+}
+
+/* ---------- present stage ---------- */
+let stageIdx=0;
+function renderStage(reset){
+  if(reset) stageIdx=0;
+  const d=scriptData(), a=ageJa(S.r.age);
+  const hide = stageIdx<4;
+  $("stageCard").innerHTML = cardHTML(starCfg(),{hideName:hide});
+  const st=$("stageStep"), bt=$("stageBtns");
+  if(stageIdx===0){
+    st.innerHTML='<span class="waiting">Press <b>Start</b> when the class is ready…</span>';
+    bt.innerHTML='<button type="button" class="pillbtn" data-stage="1">▶ Start</button>';
+  } else if(stageIdx===1){
+    st.innerHTML='<span class="chip">CLUE 1</span><div class="cluetxt">'+(esc(S.s.c1)||"(write your clues in the Script tab!)")+"</div>";
+    bt.innerHTML='<button type="button" class="pillbtn" data-stage="2">Next clue →</button>';
+  } else if(stageIdx===2){
+    st.innerHTML='<span class="chip">CLUE 2</span><div class="cluetxt">'+(esc(S.s.c2)||"(write your clues in the Script tab!)")+"</div>";
+    bt.innerHTML='<button type="button" class="pillbtn" data-stage="3">Say the age line →</button>';
+  } else if(stageIdx===3){
+    st.innerHTML='<span class="chip">SAY IT IN JAPANESE</span>'
+      + '<div class="biglinero"><span class="ro">'+ (S.s.san?"___-san":"___") +" wa "+(a?roHTML(a.ro):"___")+" desu.</span></div>"
+      + '<div class="waiting">Class guesses: <span class="ro">“___ desu ka?”</span> → <span class="ro">“Hai, sou desu!” / “Iie!”</span></div>';
+    bt.innerHTML='<button type="button" class="pillbtn" data-stage="4">🎉 REVEAL!</button>';
+  } else {
+    st.innerHTML='<div class="revealname">'+esc(d.l1.ro)+"</div>"
+      + '<div class="waiting">…now <b>bow</b> 🙇 — and enjoy the applause! 👏</div>';
+    bt.innerHTML='<button type="button" class="pillbtn ghost" data-stage="0">↻ Play again</button>';
+  }
+}
+document.addEventListener("click",(e)=>{
+  const b=e.target.closest("[data-stage]"); if(!b) return;
+  stageIdx=Number(b.dataset.stage);
+  if(stageIdx===4){ confetti(); }
+  renderStage();
+});
+function confetti(){
+  const ems=["🎉","🌸","⭐","🎊","✨"];
+  for(let i=0;i<26;i++){
+    const s=document.createElement("span"); s.className="confetti"; s.textContent=ems[i%ems.length];
+    s.style.left=(Math.random()*96)+"vw"; s.style.animationDelay=(Math.random()*.5)+"s";
+    document.body.appendChild(s); setTimeout(()=>s.remove(),2300);
+  }
+}
+
+/* ---------- checklist + print ---------- */
+function renderChecklist(){
+  const items=[
+    [!!S.star.en,"Star chosen"+(S.star.en?" — "+esc(S.star.en):"")],
+    [!!S.r.who.trim(),"Research notes in my own words"],
+    [!!ageJa(S.r.age),"Age found and turned into Japanese"],
+    [!!S.card.kata,"Katakana name on the card"],
+    [!!S.card.motif,"Motif picked (sneaky hint!)"],
+    [!!(S.s.c1.trim()&&S.s.c2.trim()),"Two clues written"],
+    [!!(S.y.kata&&S.y.age),"Yuru-chara mascot (fast finishers)"]
+  ];
+  $("checkList").innerHTML = items.map(([ok,txt])=>'<div class="ckrow"><span class="okno '+(ok?"ok":"no")+'">'+(ok?"✔":"○")+"</span><span>"+txt+"</span></div>").join("");
+}
+$("printBtn").addEventListener("click",()=>{ buildPrint(); setTimeout(()=>window.print(),60); });
+function buildPrint(){
+  const a=ageJa(S.r.age), d=scriptData();
+  const card=cardHTML(starCfg());
+  const yuru=(S.y.kata||S.y.motif)? cardHTML(yuruCfg()) : "";
+  $("printSheet").innerHTML =
+    "<h2>🌟 The Famous Meishi Gallery — my star file</h2>"
+    + '<div class="pval" style="margin-bottom:4mm">Name: ______________________ &nbsp;&nbsp; Class: ________ &nbsp;&nbsp; My star: <b>'+esc(S.star.en||"__________")+"</b></div>"
+    + '<div class="psec"><div class="plabel">🔍 My research (own words)</div>'
+    + '<div class="pval"><b>Famous for:</b> '+esc(S.r.who||"—")+"</div>"
+    + '<div class="pval"><b>Age:</b> '+esc(S.r.age||"—")+(a?" → "+roHTML(a.ro):"")+(S.r.invented?" <i>(invented age!)</i>":"")+"</div>"
+    + '<div class="pval"><b>Fun facts:</b> 1. '+esc(S.r.f1||"—")+" &nbsp; 2. "+esc(S.r.f2||"—")+"</div>"
+    + '<div class="pval"><b>Motif:</b> '+esc(S.r.motif||"—")+' &nbsp;·&nbsp; <b>Sources:</b> '+esc(S.r.src||"—")+"</div></div>"
+    + '<div class="psec"><div class="plabel">🎤 My intro script + clues</div>'
+    + '<div class="pval"><span class="ro">'+d.l1.ro+"</span></div>"
+    + '<div class="pval"><span class="ro">'+d.l2.roH+"</span></div>"
+    + '<div class="pval"><b>Clue 1:</b> '+esc(S.s.c1||"—")+" &nbsp;·&nbsp; <b>Clue 2:</b> "+esc(S.s.c2||"—")+"</div></div>"
+    + '<div class="psec"><div class="plabel">✂️ Cut out — real meishi size! One for the gallery wall, one to keep</div>'
+    + '<div class="cutrow"><div class="cutcard">'+card+'</div><div class="cutcard">'+card+"</div></div>"
+    + '<div class="cutnote">Hold it with two hands when you hand it in — just like a real meishi exchange! 🙇</div></div>'
+    + (yuru? '<div class="psec"><div class="plabel">🌸 My yuru-chara — '+esc(S.y.kata)+"</div>"
+        + '<div class="pval">A '+esc(S.y.is||"mascot")+" that loves "+esc(S.y.loves||"…")
+        + (S.y.age?(" · age "+esc(S.y.age)+(ageJa(S.y.age)?" → "+roHTML(ageJa(S.y.age).ro):"")):"")
+        + (S.y.phrase?(' · says “'+esc(S.y.phrase)+"”"):"")+"</div>"
+        + '<div class="cutrow"><div class="cutcard">'+yuru+"</div></div></div>" : "");
+}
+
+/* ---------- reset ---------- */
+$("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Start over? This wipes your star, research and cards on this laptop.")) return;
+  try{ localStorage.removeItem("famousMeishi_v1"); }catch(e){}
+  S=structuredClone(DEF); setFields(); renderAll();
+});
+
+/* ---------- boot ---------- */
+function renderAll(){
+  renderTabs(); renderStars(); renderPickers(); renderAgeBox(); renderYAgeBox(); renderTrickies();
+  renderCard(); renderYCard(); renderScript(); renderChecklist();
+}
+setFields(); renderAll();
+
+</script>
+</body>
+</html>
