@@ -326,6 +326,8 @@ function meishiHTML(o){
     '<div class="motif">'+o.motif+'</div></div>';
 }
 
+// Say the name only if it is typed in Japanese; an English name gets a short pause instead
+function nameSay(n){ return /[\u3040-\u30ff\u4e00-\u9fff]/.test(n||'') ? n : ''; }
 function phrases(){
   const n = state.name.trim();
   const a = AGES[state.age];
@@ -335,7 +337,7 @@ function phrases(){
      en:'Nice to meet you. (smile & face sensei)', keys:['はじめまして'], beats:[B('ha'),B('ji'),B('me'),B('ma'),B('shi'),B('te')]},
     {grp:'Your four lines', color:'var(--blue)', id:'l2',
      ro:'Watashi wa '+(n?n:'[name]')+' desu.', kana:'わたしは '+(n?n:'…')+' です。',
-     tts:'わたしは、'+(n?n:'ミア')+'、です。',
+     tts:'わたしは、'+nameSay(n)+'、です。',
      en:'I am '+(n?n:'[name]')+'.', keys:['わたし','です'], beats:[B('wa'),B('ta'),B('shi'),B('wa'),{t:(n||'name'),skip:true},...DESU]},
     {grp:'Your four lines', color:'var(--blue)', id:'l3',
      ro:a.ro+' desu.', kana:a.kana+'です。', tts:a.kana+'です。',
@@ -443,7 +445,7 @@ function scriptSteps(){
   return [
     {who:'you', act:true,  txt:'🙇 Bow — about 30°, no talking while bowing'},
     {who:'you', ro:'Hajimemashite.', tts:'はじめまして。'},
-    {who:'you', ro:'Watashi wa '+n+' desu.', tts:'わたしは、'+(state.name.trim()||'ミア')+'、です。'},
+    {who:'you', ro:'Watashi wa '+n+' desu.', tts:'わたしは、'+nameSay(state.name.trim())+'、です。'},
     {who:'you', ro:a.ro+' desu.', tts:a.kana+'です。'},
     {who:'you', ro:'Yoroshiku onegaishimasu.', tts:'よろしくおねがいします。', note:'small bow'},
     {who:'you', ro:'Douzo.', tts:'どうぞ。', note:'offer YOUR meishi — two hands, writing facing sensei'},
